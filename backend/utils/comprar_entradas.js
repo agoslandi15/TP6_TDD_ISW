@@ -1,4 +1,3 @@
-// comprar_entradas.js
 function validar_cant_entradas(cantidad) {
 	if (typeof cantidad !== 'number' || Number.isNaN(cantidad)) {
 		throw new TypeError('cantidad debe ser un número');

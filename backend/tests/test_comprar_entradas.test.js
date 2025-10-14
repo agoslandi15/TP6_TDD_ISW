@@ -1,5 +1,4 @@
-// test_comprar_entradas.test.js
-const validar = require('./comprar_entradas');
+const validar = require('../utils/comprar_entradas');
 
 test('acepta 0', () => {
     var cantidadEntradas = 0;
@@ -18,5 +17,5 @@ test('acepta 10', () => {
 test('rechaza 11', () => {
   var cantidadEntradas = 11;
   var resultado = validar(cantidadEntradas);
-  expect(resultado).toBe('No puede superar las 10 entradas');
+  expect(resultado).toBe('No puede superar las 10 entradas');
 });

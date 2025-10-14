@@ -1,0 +1,5 @@
+function validar_seleccion_forma_pago(forma_pago) {
+	
+}
+
+module.exports = validar_seleccion_forma_pago;
