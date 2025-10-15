@@ -14,7 +14,7 @@ function validar_edad_precio(edad, tipo_entrada) {
 }
 
 function calcular_precio_entrada(edad, precio_base) {
-    if (edad < 3 || edad > 60) {
+    if (edad <= 3 || edad >= 60) {
         return 0;
     } else if (edad < 15) {
         return precio_base / 2;

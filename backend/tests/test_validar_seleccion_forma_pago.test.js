@@ -23,4 +23,3 @@ test(
         expect(validar_seleccion_forma_pago('tarjeta')).toBe("Forma de pago inválida");
     }
 ); 
-//a chequear el ultimo porque es con tarjeta pero por mp

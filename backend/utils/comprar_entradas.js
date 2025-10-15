@@ -9,7 +9,7 @@ function comprar_entradas(fecha_evento, cantidad_entradas, edad_comprador, tipo_
     // Parse date string to local date (YYYY-MM-DD format)
     const parts = fecha_evento.split('-');
     const año = parseInt(parts[0]);
-    const mes = parseInt(parts[1]) - 1;  // Month is 0-indexed in JavaScript
+    const mes = parseInt(parts[1]) - 1;  
     const día = parseInt(parts[2]);
     const fecha_evento_date = new Date(año, mes, día);
 
@@ -22,7 +22,7 @@ function comprar_entradas(fecha_evento, cantidad_entradas, edad_comprador, tipo_
     if (validar_compra_anticipada(fecha_evento_date) !== "Se ingresó correctamente la fecha del evento") {
         return "Compra anticipada no válida, se permiten compras con hasta un mes de anticipación";
     }
-    for (let i = 0; i < cantidad_entradas; i++) {
+    for (let i = 1; i < cantidad_entradas; i++) {
         validar_edad_precio(edad_comprador[i], tipo_entrada[i]);
     }
     if (validar_seleccion_forma_pago(forma_pago) !== "Forma de pago válida") {
