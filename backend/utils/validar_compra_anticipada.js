@@ -10,7 +10,7 @@ function validar_compra_anticipada(fecha_evento) {
 		return 'No se pueden comprar entradas con más de un mes de anticipación';
 	}
 
-    return 'Se ingresó correctamente la fecha de compra';
+    return 'Se ingresó correctamente la fecha del evento';
 }
 
-module.exports = { validar_compra_anticipada };
+module.exports = validar_compra_anticipada;

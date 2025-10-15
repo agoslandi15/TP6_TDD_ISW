@@ -16,8 +16,8 @@ function validar_fecha_apertura(fecha_apertura) {
 		return "Parque cerrado el 1 de enero";
 	}
 	
-    return 'Se ingresó correctamente la fecha de compra';
+    return 'Se ingresó correctamente la fecha del evento';
 
 }
 
-module.exports = { validar_fecha_apertura };
+module.exports = validar_fecha_apertura;

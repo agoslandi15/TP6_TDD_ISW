@@ -1,4 +1,4 @@
-const { validar_fecha_apertura } = require('../utils/validar_fecha_apertura');
+const validar_fecha_apertura = require('../utils/validar_fecha_apertura');
 
 test('fecha invalida dias lunes', () => {
   const fecha = new Date(2024, 9, 7);
@@ -24,5 +24,5 @@ test('fecha valida', () => {
   const hoy = new Date();
   const fecha = new Date();
   fecha.setDate(hoy.getDate() + 15);
-  expect(validar_fecha_apertura(fecha)).toBe('Se ingresó correctamente la fecha de compra');
+  expect(validar_fecha_apertura(fecha)).toBe('Se ingresó correctamente la fecha del evento');
 });

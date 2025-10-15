@@ -1,10 +1,10 @@
-const { validar_compra_anticipada } = require('../utils/validar_compra_anticipada');
+const validar_compra_anticipada = require('../utils/validar_compra_anticipada');
 
 test('fecha válida dentro de un mes', () => {
     const hoy = new Date();
     const fecha_evento = new Date();
     fecha_evento.setDate(hoy.getDate() + 15);
-    expect(validar_compra_anticipada(fecha_evento)).toBe('Se ingresó correctamente la fecha de compra');
+    expect(validar_compra_anticipada(fecha_evento)).toBe('Se ingresó correctamente la fecha del evento');
 });
 
 test('fecha inválida en el pasado', () => {
