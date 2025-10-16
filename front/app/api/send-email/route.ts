@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     console.log("[v0] Sending email to:", recipientEmail, "(test mode)")
 
     const { data, error } = await resend.emails.send({
-      from: "Parque Ecológico <onboarding@resend.dev>",
+      from: "EcoHarmony Park - G3 <onboarding@resend.dev>",
       to: [recipientEmail],
       subject: subject,
       html: html,

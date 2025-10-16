@@ -76,7 +76,7 @@ function ConfirmationContent() {
     if (!ticket) return
 
     const ticketText = `
-PARQUE ECOLÓGICO - ENTRADA
+ECOHARMONY PARK - ENTRADA
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 CÓDIGO DE ENTRADA: ${ticketCode}

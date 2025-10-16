@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { isParkOpen, getMinDate, calculateTotal, type Ticket } from "@/lib/park-data"
+import { isParkOpen, getMinDate, calculateTotal, type Ticket, isChristmas, isNewYear, isWithinOneMonth } from "@/lib/park-data"
 import { Calendar, Users, CreditCard, AlertCircle, CheckCircle2 } from "lucide-react"
 
 interface Visitor {
@@ -42,10 +42,31 @@ export function TicketPurchaseForm() {
       const today = new Date()
       today.setHours(0, 0, 0, 0)
 
+      const errorMessages: string[] = []
+
       if (selectedDate < today) {
-        newErrors.visitDate = "La fecha debe ser hoy o en el futuro"
-      } else if (!isParkOpen(selectedDate)) {
-        newErrors.visitDate = "El parque está cerrado en la fecha seleccionada (cerrado los lunes)"
+        errorMessages.push("La fecha debe ser hoy o en el futuro")
+      } else {
+        // Solo validar las otras restricciones si la fecha no está en el pasado
+        if (isChristmas(selectedDate)) {
+          errorMessages.push("El parque está cerrado el 25 de diciembre (Navidad)")
+        }
+        
+        if (isNewYear(selectedDate)) {
+          errorMessages.push("El parque está cerrado el 1 de enero (Año Nuevo)")
+        }
+        
+        if (!isParkOpen(selectedDate)) {
+          errorMessages.push("El parque está cerrado en la fecha seleccionada (cerrado los lunes)")
+        }
+        
+        if (!isWithinOneMonth(selectedDate)) {
+          errorMessages.push("Solo puedes comprar entradas con máximo un mes de anticipación")
+        }
+      }
+
+      if (errorMessages.length > 0) {
+        newErrors.visitDate = errorMessages.join(" • ")
       }
     }
 
@@ -222,7 +243,9 @@ export function TicketPurchaseForm() {
                     <AlertDescription>{errors.visitDate}</AlertDescription>
                   </Alert>
                 )}
-                <p className="text-sm text-muted-foreground">El parque está cerrado los lunes</p>
+                <p className="text-sm text-muted-foreground">
+                  El parque está cerrado los lunes, 25 de diciembre y 1 de enero. Máximo 1 mes de anticipación.
+                </p>
               </div>
 
               <div className="space-y-2">

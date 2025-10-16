@@ -9,7 +9,7 @@ interface EmailData {
 
 export async function sendConfirmationEmail(
   data: EmailData,
-): Promise<{ success: boolean; code: string; qrUrl: string }> {
+): Promise<{ success: boolean; code: string; qrUrl: string; testMode?: boolean; sentTo?: string }> {
   try {
     // Generate unique code and QR
     const ticketCode = generateTicketCode(data.ticket.id)
@@ -26,7 +26,7 @@ export async function sendConfirmationEmail(
       },
       body: JSON.stringify({
         to: data.to,
-        subject: "Confirmación de Compra - Parque Ecológico",
+        subject: "Confirmación de Compra - EcoHarmony Park",
         html: emailContent,
         ticketCode: ticketCode,
         qrCodeBase64: qrCodeBase64, // Send base64 instead of URL
@@ -47,7 +47,7 @@ export async function sendConfirmationEmail(
     emails.push({
       id: Math.random().toString(36).substr(2, 9),
       to: data.to,
-      subject: "Confirmación de Compra - Parque Ecológico",
+      subject: "Confirmación de Compra - EcoHarmony Park",
       content: generateEmailContent(data, ticketCode),
       sentAt: new Date().toISOString(),
       ticketId: data.ticket.id,
@@ -56,7 +56,13 @@ export async function sendConfirmationEmail(
     })
     localStorage.setItem("park_emails", JSON.stringify(emails))
 
-    return { success: true, code: ticketCode, qrUrl: qrCodeUrl }
+    return { 
+      success: true, 
+      code: ticketCode, 
+      qrUrl: qrCodeUrl,
+      testMode: result.testMode,
+      sentTo: result.sentTo
+    }
   } catch (error) {
     console.error("[v0] Error sending email:", error)
     return { success: false, code: "", qrUrl: "" }
@@ -78,9 +84,9 @@ function generateEmailHTML(data: EmailData, ticketCode: string): string {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Confirmación de Compra - Parque Ecológico</title>
+  <title>Confirmación de Compra - EcoHarmony Park</title>
 </head>
-<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f5f5f5;">
+<body style="margin: 0; padding: 0; font-family: Montserrat, sans-serif; background-color: #f5f5f5;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5; padding: 20px;">
     <tr>
       <td align="center">
@@ -88,7 +94,7 @@ function generateEmailHTML(data: EmailData, ticketCode: string): string {
            Header 
           <tr>
             <td style="background: linear-gradient(135deg, #2d5016 0%, #4a7c2c 100%); padding: 40px 20px; text-align: center;">
-              <h1 style="color: #ffffff; margin: 0; font-size: 28px;">🌿 Parque Ecológico</h1>
+              <h1 style="color: #ffffff; margin: 0; font-size: 28px;">🌿 EcoHarmony Park 🌿</h1>
               <p style="color: #e8f5e9; margin: 10px 0 0 0; font-size: 16px;">Confirmación de Compra</p>
             </td>
           </tr>
@@ -180,9 +186,9 @@ function generateEmailHTML(data: EmailData, ticketCode: string): string {
            Footer 
           <tr>
             <td style="background-color: #f5f5f5; padding: 30px 40px; text-align: center; border-top: 1px solid #e0e0e0;">
-              <p style="color: #999; margin: 0 0 10px 0; font-size: 13px;">¡Esperamos verte pronto en el Parque Ecológico!</p>
+              <p style="color: #999; margin: 0 0 10px 0; font-size: 13px;">¡Esperamos verte pronto en EcoHarmony Park!</p>
               <p style="color: #999; margin: 0; font-size: 12px;">
-                <a href="mailto:contacto@parqueecologico.com" style="color: #4a7c2c; text-decoration: none;">contacto@parqueecologico.com</a>
+                <a href="mailto:ecoharmonypark@gmail.com" style="color: #4a7c2c; text-decoration: none;">ecoharmonypark@gmail.com</a>
               </p>
             </td>
           </tr>
@@ -208,7 +214,7 @@ function generateEmailContent(data: EmailData, ticketCode: string): string {
   return `
 Hola ${userName},
 
-¡Gracias por tu compra en el Parque Ecológico!
+¡Gracias por tu compra en EcoHarmony Park!
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 TU CÓDIGO DE ENTRADA
@@ -272,12 +278,11 @@ INFORMACIÓN IMPORTANTE
 - Si el QR no funciona, usa el código alfanumérico
 - Las entradas no son reembolsables
 
-¡Esperamos verte pronto en el Parque Ecológico!
+¡Esperamos verte pronto en EcoHarmony Park!
 
 Atentamente,
-Equipo del Parque Ecológico
-www.parqueecologico.com
-contacto@parqueecologico.com
+🌿 Grupo 3 - EcoHarmony Park 🌿
+ecoharmonypark@gmail.com
   `.trim()
 }
 

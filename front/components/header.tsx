@@ -16,7 +16,7 @@ export function Header() {
               <Leaf className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h1 className="font-display text-xl font-bold text-primary">Parque Ecológico</h1>
+              <h1 className="font-display text-xl font-bold text-primary">EcoHarmony Park</h1>
               <p className="text-xs text-muted-foreground">Naturaleza y Diversión</p>
             </div>
           </div>

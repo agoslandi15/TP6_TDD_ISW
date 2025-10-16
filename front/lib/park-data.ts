@@ -20,6 +20,21 @@ export function isParkOpen(date: Date): boolean {
   return schedule?.isOpen ?? false
 }
 
+export function isChristmas(date: Date): boolean {
+  return date.getDate() === 25 && date.getMonth() === 11 // December 25
+}
+
+export function isNewYear(date: Date): boolean {
+  return date.getDate() === 1 && date.getMonth() === 0 // January 1
+}
+
+export function isWithinOneMonth(date: Date): boolean {
+  const today = new Date()
+  const oneMonthFromNow = new Date()
+  oneMonthFromNow.setMonth(today.getMonth() + 1)
+  return date <= oneMonthFromNow
+}
+
 export function getMinDate(): string {
   const today = new Date()
   return today.toISOString().split("T")[0]

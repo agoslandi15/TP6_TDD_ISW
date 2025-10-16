@@ -12,8 +12,8 @@ const montserrat = Montserrat({
 })
 
 export const metadata: Metadata = {
-  title: "Parque Ecológico - Compra de Entradas",
-  description: "Sistema de compra de entradas para el parque ecológico de diversión",
+  title: "EcoHarmony Park - Compra de Entradas",
+  description: "Sistema de compra de entradas para EcoHarmony Park",
     generator: 'v0.app'
 }
 
