@@ -66,7 +66,7 @@ router.post('/', async (req, res) => {
     }
 
     // Preparar datos para el correo
-    const datosCorreo = {
+    const datos_correo = {
       codigo_entrada,
       fecha_evento,
       cantidad_entradas,
@@ -76,32 +76,32 @@ router.post('/', async (req, res) => {
     };
 
     // Intentar enviar correo con el código QR (no bloqueante)
-    let correoEnviado = false;
-    let errorCorreo = null;
+    let correo_enviado = false;
+    let error_correo = null;
     
     try {
-      await enviar_correo_responsable(email_usuario, datosCorreo);
-      correoEnviado = true;
+      await enviar_correo_responsable(email_usuario, datos_correo);
+      correo_enviado = true;
       console.log(`✅ Correo enviado exitosamente a ${email_usuario}`);
-    } catch (emailError) {
-      correoEnviado = false;
-      errorCorreo = emailError.message;
-      console.error('⚠️ Error al enviar correo (la compra se completó):', emailError.message);
+    } catch (email_error) {
+      correo_enviado = false;
+      error_correo = email_error.message;
+      console.error('⚠️ Error al enviar correo (la compra se completó):', email_error.message);
     }
 
     // Responder con éxito (incluso si falla el correo)
     const response = {
       success: true,
-      message: correoEnviado 
+      message: correo_enviado 
         ? 'Compra realizada con éxito. Se ha enviado un correo de confirmación.'
         : 'Compra realizada con éxito. No se pudo enviar el correo de confirmación.',
       codigo_entrada,
       total: precio_total,
-      correo_enviado: correoEnviado
+      correo_enviado: correo_enviado
     };
 
-    if (!correoEnviado && errorCorreo) {
-      response.advertencia = `El correo no se pudo enviar: ${errorCorreo}`;
+    if (!correo_enviado && error_correo) {
+      response.advertencia = `El correo no se pudo enviar: ${error_correo}`;
     }
 
     res.status(200).json(response);

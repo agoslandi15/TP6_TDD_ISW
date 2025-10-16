@@ -1,5 +1,5 @@
 const validar_cantidad_entradas = require('./validar_cantidad_entradas');
-const validar_seleccion_forma_pago = require('./validar_seleccion_forma_pago');
+const validar_seleccion_forma_pago = require('./validar_seleccion_forma_pago.js');
 const validar_edad_precio = require('./validar_edad_precio');
 const validar_fecha_apertura = require('./validar_fecha_apertura');
 const validar_compra_anticipada = require('./validar_compra_anticipada');

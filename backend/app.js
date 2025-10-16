@@ -9,8 +9,8 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-const comprarEntradaRoutes = require('./routes/comprar-entrada');
-app.use('/api/comprar-entrada', comprarEntradaRoutes);
+const comprar_entrada_routes = require('./routes/comprar-entrada');
+app.use('/api/comprar-entrada', comprar_entrada_routes);
 
 // Puerto
 const PORT = process.env.PORT || 3000;

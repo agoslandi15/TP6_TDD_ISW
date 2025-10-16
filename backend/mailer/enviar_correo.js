@@ -28,7 +28,7 @@ async function enviar_correo_responsable(destinatario, datos) {
   } = datos
 
   // Función para determinar categoría de entrada según edad
-  const obtenerCategoriaEdad = (edad) => {
+  const obtener_categoria_edad = (edad) => {
     if (edad <= 3) return 'Bebé (Gratis)';
     if (edad < 15) return 'Niño/a';
     if (edad < 60) return 'Adulto';
@@ -42,7 +42,7 @@ async function enviar_correo_responsable(destinatario, datos) {
     day: "numeric",
   });
 
-  const mailOptions = {
+  const mail_options = {
     from: `"EcoHarmony Park - G3" <${process.env.SMTP_USER}>`,
     to: destinatario,
     subject: `Confirmación de Compra - EcoHarmony Park - Código: ${codigo_entrada}`,
@@ -130,7 +130,7 @@ async function enviar_correo_responsable(destinatario, datos) {
               <h3 style="color: #2d5016; margin: 0 0 15px 0; font-size: 18px; border-bottom: 2px solid #e8f5e9; padding-bottom: 10px;">Detalle de Entradas</h3>
               ${entradas_detalle.map((entrada, index) => `
                 <div style="background-color: #f9f9f9; border-left: 3px solid #4a7c2c; padding: 12px; margin-bottom: 10px; border-radius: 4px;">
-                  <p style="margin: 0; color: #333; font-size: 14px;"><strong>Entrada ${entrada.numero}:</strong> ${obtenerCategoriaEdad(entrada.edad)} - Pase ${entrada.tipo}</p>
+                  <p style="margin: 0; color: #333; font-size: 14px;"><strong>Entrada ${entrada.numero}:</strong> ${obtener_categoria_edad(entrada.edad)} - Pase ${entrada.tipo}</p>
                   <p style="margin: 5px 0 0 0; color: #2d5016; font-size: 14px; font-weight: bold;">$${entrada.precio.toLocaleString("es-AR")}</p>
                   ${entrada.precio === 0 ? '<p style="margin: 5px 0 0 0; color: #4a7c2c; font-size: 12px;">✓ Entrada gratuita</p>' : ''}
                   ${entrada.edad >= 4 && entrada.edad < 15 ? '<p style="margin: 5px 0 0 0; color: #4a7c2c; font-size: 12px;">✓ Descuento 50% aplicado</p>' : ''}
@@ -178,7 +178,7 @@ async function enviar_correo_responsable(destinatario, datos) {
     `
   }
 
-  await transporter.sendMail(mailOptions)
+  await transporter.sendMail(mail_options)
   console.log(`✉️ Correo enviado a ${destinatario}`)
 }
 
