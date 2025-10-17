@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
-import { useAuth } from "@/lib/auth-context"
+import { use_auth } from "@/lib/auth-context"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -12,7 +12,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Leaf, Trees, Sparkles } from "lucide-react"
 
 export function LoginForm() {
-  const { login, register } = useAuth()
+  const { login, register } = use_auth()
   const [isLogin, setIsLogin] = useState(true)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -30,7 +30,7 @@ export function LoginForm() {
       if (isLogin) {
         success = await login(email, password)
         if (!success) {
-          setError("Credenciales inválidas")
+          setError("Por favor ingresa un email válido")
         }
       } else {
         if (!name.trim()) {
@@ -52,7 +52,7 @@ export function LoginForm() {
 
   const fillDemoCredentials = () => {
     setEmail("demo@parque.com")
-    setPassword("demo123")
+    setPassword("123")
     setIsLogin(true)
   }
 
@@ -111,7 +111,7 @@ export function LoginForm() {
 
             <div className="space-y-2">
               <Label htmlFor="email" className="text-sm font-medium">
-                Email
+                Email (para recibir confirmación)
               </Label>
               <Input
                 id="email"
@@ -126,12 +126,12 @@ export function LoginForm() {
 
             <div className="space-y-2">
               <Label htmlFor="password" className="text-sm font-medium">
-                Contraseña
+                Contraseña (cualquiera)
               </Label>
               <Input
                 id="password"
                 type="password"
-                placeholder="••••••••"
+                placeholder="Escribe cualquier cosa"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -153,7 +153,7 @@ export function LoginForm() {
                 onClick={fillDemoCredentials}
               >
                 <Sparkles className="mr-2 h-4 w-4" />
-                Usar credenciales de prueba
+                Rellenar ejemplo rápido
               </Button>
             )}
 
@@ -185,11 +185,11 @@ export function LoginForm() {
           {isLogin && (
             <div className="mt-6 rounded-lg border border-primary/20 bg-primary/5 p-4">
               <p className="text-center text-sm text-muted-foreground">
-                <strong className="text-foreground">Credenciales de prueba:</strong>
+                <strong className="text-foreground">Instrucciones:</strong>
                 <br />
-                Email: <code className="rounded bg-background px-2 py-1">demo@parque.com</code>
+                📧 <strong>Email:</strong> Ingresa tu email real(recibirás la confirmación aquí)
                 <br />
-                Contraseña: <code className="rounded bg-background px-2 py-1">demo123</code>
+                🔐 <strong>Contraseña:</strong> Cualquier cosa (ej: <code className="rounded bg-background px-1">123</code>)
               </p>
             </div>
           )}

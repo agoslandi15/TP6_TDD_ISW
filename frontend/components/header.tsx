@@ -1,11 +1,11 @@
 "use client"
 
-import { useAuth } from "@/lib/auth-context"
+import { use_auth } from "@/lib/auth-context"
 import { Button } from "@/components/ui/button"
 import { LogOut, User, Leaf } from "lucide-react"
 
 export function Header() {
-  const { user, logout } = useAuth()
+  const { user, logout } = use_auth()
 
   return (
     <header className="border-b border-border bg-card">

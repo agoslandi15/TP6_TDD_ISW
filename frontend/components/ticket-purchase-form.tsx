@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { useAuth } from "@/lib/auth-context"
+import { use_auth } from "@/lib/auth-context"
 import { useComprarEntradas } from "@/hooks/useComprarEntradas"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -21,7 +21,7 @@ interface Visitor {
 
 export function TicketPurchaseForm() {
   const router = useRouter()
-  const { user } = useAuth()
+  const { user } = use_auth()
   const [step, setStep] = useState(1)
 
   // Form state

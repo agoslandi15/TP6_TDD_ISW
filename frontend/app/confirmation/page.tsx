@@ -2,7 +2,7 @@
 
 import { useEffect, useState, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useAuth } from "@/lib/auth-context"
+import { use_auth } from "@/lib/auth-context"
 import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -13,7 +13,7 @@ import { CheckCircle2, Calendar, Users, CreditCard, Download, Home, Loader2, QrC
 function ConfirmationContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { user } = useAuth()
+  const { user } = use_auth()
   const ticketId = searchParams.get("ticketId")
 
   const [ticket, setTicket] = useState<Ticket | null>(null)
