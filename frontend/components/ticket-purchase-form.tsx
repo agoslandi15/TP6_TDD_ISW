@@ -14,7 +14,7 @@ import { isParkOpen, getMinDate, calculateTotal, type Ticket, isChristmas, isNew
 import { Calendar, Users, CreditCard, AlertCircle, CheckCircle2 } from "lucide-react"
 
 interface Visitor {
-  age: number
+  age: number | null
   passType: "VIP" | "Regular"
 }
 
@@ -26,7 +26,7 @@ export function TicketPurchaseForm() {
   // Form state
   const [visitDate, setVisitDate] = useState("")
   const [quantity, setQuantity] = useState(1)
-  const [visitors, setVisitors] = useState<Visitor[]>([{ age: 18, passType: "Regular" }])
+  const [visitors, setVisitors] = useState<Visitor[]>([{ age: null, passType: "Regular" }])
   const [paymentMethod, setPaymentMethod] = useState<"cash" | "card" | "">("")
 
   // Validation errors
@@ -84,8 +84,8 @@ export function TicketPurchaseForm() {
     const newErrors: Record<string, string> = {}
 
     visitors.forEach((visitor, index) => {
-      if (!visitor.age || visitor.age < 0) {
-        newErrors[`visitor-${index}`] = "Edad inválida"
+      if (visitor.age === null || visitor.age < 0) {
+        newErrors[`visitor-${index}`] = "Debes ingresar una edad válida"
       }
     })
 
@@ -111,7 +111,7 @@ export function TicketPurchaseForm() {
     if (newQuantity > currentVisitors.length) {
       // Add new visitors
       for (let i = currentVisitors.length; i < newQuantity; i++) {
-        currentVisitors.push({ age: 18, passType: "Regular" })
+        currentVisitors.push({ age: null, passType: "Regular" })
       }
     } else if (newQuantity < currentVisitors.length) {
       // Remove excess visitors
@@ -180,30 +180,35 @@ export function TicketPurchaseForm() {
     <div className="mx-auto max-w-4xl">
       {/* Progress indicator */}
       <div className="mb-8">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between relative">
           {[1, 2, 3].map((s) => (
-            <div key={s} className="flex flex-1 items-center">
-              <div
-                className={`flex h-10 w-10 items-center justify-center rounded-full border-2 font-semibold transition-colors ${
-                  s === step
-                    ? "border-primary bg-primary text-white"
-                    : s < step
+            <div key={s} className="flex flex-col items-center flex-1">
+              <div className="flex items-center w-full">
+                <div 
+                  className={`flex-1 h-1 transition-colors ${s <= step ? "bg-primary" : "bg-border"}`} 
+                  style={{ visibility: s === 1 ? 'hidden' : 'visible' }} 
+                />
+                <div
+                  className={`flex h-10 w-10 items-center justify-center rounded-full border-2 font-semibold transition-colors ${
+                    s <= step
                       ? "border-primary bg-primary text-white"
                       : "border-border bg-background text-muted-foreground"
-                }`}
-              >
-                {s < step ? <CheckCircle2 className="h-5 w-5" /> : s}
+                  }`}
+                >
+                  {s < step ? <CheckCircle2 className="h-5 w-5" /> : s}
+                </div>
+                <div 
+                  className={`flex-1 h-1 transition-colors ${s < step ? "bg-primary" : "bg-border"}`}
+                  style={{ visibility: s === 3 ? 'hidden' : 'visible' }} 
+                />
               </div>
-              {s < 3 && <div className={`h-1 flex-1 transition-colors ${s < step ? "bg-primary" : "bg-border"}`} />}
+              <span className={`mt-2 text-sm ${step === s ? "font-semibold text-primary" : "text-muted-foreground"}`}>
+                {s === 1 && "Fecha y Cantidad"}
+                {s === 2 && "Datos de Visitantes"}
+                {s === 3 && "Pago"}
+              </span>
             </div>
           ))}
-        </div>
-        <div className="mt-2 flex justify-between text-sm">
-          <span className={step === 1 ? "font-semibold text-primary" : "text-muted-foreground"}>Fecha y Cantidad</span>
-          <span className={step === 2 ? "font-semibold text-primary" : "text-muted-foreground"}>
-            Datos de Visitantes
-          </span>
-          <span className={step === 3 ? "font-semibold text-primary" : "text-muted-foreground"}>Pago</span>
         </div>
       </div>
 
@@ -294,15 +299,33 @@ export function TicketPurchaseForm() {
                           <Label htmlFor={`age-${index}`}>Edad</Label>
                           <Input
                             id={`age-${index}`}
-                            type="number"
-                            min="0"
-                            max="120"
-                            value={visitor.age}
-                            onChange={(e) => updateVisitor(index, "age", Number.parseInt(e.target.value) || 0)}
+                            type="text"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
+                            placeholder="Ingrese la edad"
+                            value={visitor.age === null ? '' : visitor.age}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              if (value === '') {
+                                updateVisitor(index, "age", null);
+                              } else {
+                                const num = parseInt(value);
+                                if (!isNaN(num) && num >= 0 && num <= 120) {
+                                  updateVisitor(index, "age", num);
+                                }
+                              }
+                            }}
                             className={errors[`visitor-${index}`] ? "border-destructive" : ""}
                           />
-                          {visitor.age < 5 && (
-                            <p className="text-sm text-success">50% de descuento para menores de 5 años</p>
+                          {visitor.age !== null && (
+                            <>
+                              {(visitor.age <= 3 || visitor.age >= 60) && (
+                                <p className="text-sm text-success">✨ Entrada gratuita</p>
+                              )}
+                              {visitor.age >= 4 && visitor.age <= 15 && (
+                                <p className="text-sm text-success">✨ 50% de descuento</p>
+                              )}
+                            </>
                           )}
                         </div>
 
@@ -316,8 +339,8 @@ export function TicketPurchaseForm() {
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="Regular">Regular - $1,500</SelectItem>
-                              <SelectItem value="VIP">VIP - $3,000</SelectItem>
+                              <SelectItem value="Regular">Regular - $5,000</SelectItem>
+                              <SelectItem value="VIP">VIP - $10,000</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
@@ -372,7 +395,7 @@ export function TicketPurchaseForm() {
                     <div className="flex items-center space-x-2 rounded-lg border p-4 hover:bg-muted/50">
                       <RadioGroupItem value="card" id="card" />
                       <Label htmlFor="card" className="flex-1 cursor-pointer">
-                        <div className="font-semibold">Tarjeta de Crédito/Débito</div>
+                        <div className="font-semibold">Tarjeta de Crédito</div>
                         <div className="text-sm text-muted-foreground">Pago seguro con Mercado Pago</div>
                       </Label>
                     </div>

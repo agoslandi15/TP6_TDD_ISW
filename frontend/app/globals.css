@@ -4,16 +4,16 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: oklch(0.99 0.01 140);
-  --foreground: oklch(0.25 0.05 150);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.25 0.05 150);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.25 0.05 150);
-  --primary: oklch(0.45 0.15 145);
-  --primary-foreground: oklch(0.99 0.01 140);
-  --secondary: oklch(0.65 0.12 85);
-  --secondary-foreground: oklch(0.15 0.03 85);
+  --background: #e8fccfff; /* nyanza */
+  --foreground: #134611ff; /* pakistan-green */
+  --card: #ffffff;
+  --card-foreground: #134611ff; /* pakistan-green */
+  --popover: #ffffff;
+  --popover-foreground: #134611ff; /* pakistan-green */
+  --primary: #134611ff; /* pakistan-green - cambiado para botones y elementos principales */
+  --primary-foreground: #e8fccfff; /* nyanza */
+  --secondary: #3da35dff; /* pigment-green */
+  --secondary-foreground: #e8fccfff; /* nyanza */
   --muted: oklch(0.96 0.01 140);
   --muted-foreground: oklch(0.5 0.05 150);
   --accent: oklch(0.55 0.18 160);

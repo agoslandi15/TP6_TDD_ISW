@@ -6,9 +6,8 @@ import { useAuth } from "@/lib/auth-context"
 import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { EmailPreview } from "@/components/email-preview"
 import type { Ticket } from "@/lib/park-data"
-import { sendConfirmationEmail, getEmailsByTicketId } from "@/lib/email-service"
+import { generateTicketCode, generateQRCodeDataURL } from "@/lib/qr-generator"
 import { CheckCircle2, Calendar, Users, CreditCard, Download, Home, Loader2, QrCode, Hash } from "lucide-react"
 
 function ConfirmationContent() {
@@ -18,13 +17,13 @@ function ConfirmationContent() {
   const ticketId = searchParams.get("ticketId")
 
   const [ticket, setTicket] = useState<Ticket | null>(null)
-  const [emailContent, setEmailContent] = useState<string>("")
+  // const [emailContent, setEmailContent] = useState<string>("")
   const [isLoading, setIsLoading] = useState(true)
   const [ticketCode, setTicketCode] = useState<string>("")
   const [qrCodeUrl, setQrCodeUrl] = useState<string>("")
 
   useEffect(() => {
-    const loadTicketAndSendEmail = async () => {
+    const loadTicket = async () => {
       if (!ticketId || !user) {
         router.push("/")
         return
@@ -39,37 +38,17 @@ function ConfirmationContent() {
       }
 
       setTicket(foundTicket)
-
-      const existingEmails = getEmailsByTicketId(ticketId)
-
-      if (existingEmails.length === 0) {
-        const result = await sendConfirmationEmail({
-          to: user.email,
-          userName: user.name,
-          ticket: foundTicket,
-        })
-
-        if (result.success) {
-          setTicketCode(result.code)
-          setQrCodeUrl(result.qrUrl)
-          if (result.testMode) {
-            console.log("[v0] Email sent in test mode to:", result.sentTo)
-          }
-        }
-      } else {
-        setTicketCode(existingEmails[0].ticketCode || "")
-        setQrCodeUrl(existingEmails[0].qrCodeUrl || "")
-      }
-
-      const emails = getEmailsByTicketId(ticketId)
-      if (emails.length > 0) {
-        setEmailContent(emails[0].content)
-      }
+      
+      // Generar código y QR
+      const code = generateTicketCode(foundTicket.id)
+      const qrUrl = generateQRCodeDataURL(foundTicket.id, code)
+      setTicketCode(code)
+      setQrCodeUrl(qrUrl)
 
       setIsLoading(false)
     }
 
-    loadTicketAndSendEmail()
+    loadTicket()
   }, [ticketId, user, router])
 
   const handleDownloadTicket = () => {
@@ -195,7 +174,7 @@ Presenta este comprobante y el código ${ticketCode} al ingresar
 
                 <div className="mt-6 rounded-lg bg-accent/10 border border-accent/20 p-4">
                   <p className="text-sm text-center font-medium text-accent-foreground">
-                    💡 Guarda este código o toma una captura de pantalla. También lo recibirás por email.
+                    💡 Guarda este código o toma una captura de pantalla.
                   </p>
                 </div>
               </CardContent>
@@ -275,9 +254,14 @@ Presenta este comprobante y el código ${ticketCode} al ingresar
                         >
                           {visitor.passType}
                         </span>
-                        {visitor.age < 5 && (
+                        {visitor.age !== null && visitor.age <= 15 && visitor.age >= 4 && (
                           <span className="rounded-full bg-success/10 px-3 py-1 text-xs font-semibold text-success">
                             50% OFF
+                          </span>
+                        )}
+                        {visitor.age !== null && (visitor.age <= 3 || visitor.age >= 60) && (
+                          <span className="rounded-full bg-success/10 px-3 py-1 text-xs font-semibold text-success">
+                            GRATIS
                           </span>
                         )}
                       </div>
@@ -298,8 +282,7 @@ Presenta este comprobante y el código ${ticketCode} al ingresar
             </CardContent>
           </Card>
 
-          {/* Email Preview */}
-          {emailContent && <EmailPreview content={emailContent} />}
+          {/* Email Preview - Temporarily removed */}
 
           {/* Actions */}
           <div className="flex flex-col gap-3 sm:flex-row">
@@ -330,13 +313,13 @@ Presenta este comprobante y el código ${ticketCode} al ingresar
                   <span className="mt-1 text-primary">•</span>
                   <span>Las entradas no son reembolsables</span>
                 </li>
-                <li className="flex items-start gap-2">
+                {/* <li className="flex items-start gap-2">
                   <span className="mt-1 text-primary">•</span>
                   <span>
                     Se ha enviado un email de confirmación a iansp1111@gmail.com (modo de prueba). Para enviar a otros
                     emails, verifica un dominio en resend.com/domains
                   </span>
-                </li>
+                </li> */}
               </ul>
             </CardContent>
           </Card>

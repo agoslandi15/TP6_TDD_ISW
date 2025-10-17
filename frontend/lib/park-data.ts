@@ -45,7 +45,7 @@ export interface Ticket {
   userId: string
   visitDate: string
   quantity: number
-  visitors: Array<{ age: number; passType: "VIP" | "Regular" }>
+  visitors: Array<{ age: number | null; passType: "VIP" | "Regular" }>
   paymentMethod: "cash" | "card"
   totalAmount: number
   purchaseDate: string
@@ -53,15 +53,27 @@ export interface Ticket {
 }
 
 export const TICKET_PRICES = {
-  regular: 1500,
-  vip: 3000,
+  regular: 5000,
+  vip: 10000,
 }
 
-export function calculateTotal(visitors: Array<{ age: number; passType: "VIP" | "Regular" }>): number {
+export function calculateTotal(visitors: Array<{ age: number | null; passType: "VIP" | "Regular" }>): number {
   return visitors.reduce((total, visitor) => {
+    if (visitor.age === null) return total;
+    
     const basePrice = visitor.passType === "VIP" ? TICKET_PRICES.vip : TICKET_PRICES.regular
-    // Children under 5 get 50% discount
-    const discount = visitor.age < 5 ? 0.5 : 0
-    return total + basePrice * (1 - discount)
+    
+    // Gratis para menores de 3 años y mayores de 60
+    if (visitor.age <= 3 || visitor.age >= 60) {
+      return total;
+    }
+    
+    // 50% de descuento para edades entre 4 y 15
+    if (visitor.age >= 4 && visitor.age <= 15) {
+      return total + basePrice * 0.5;
+    }
+    
+    // Precio completo para el resto
+    return total + basePrice;
   }, 0)
 }
