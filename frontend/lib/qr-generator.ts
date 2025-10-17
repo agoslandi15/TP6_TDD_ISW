@@ -1,31 +1,31 @@
 // Generate a unique alphanumeric ticket code
-export function generateTicketCode(ticketId: string): string {
+export function generate_ticket_code(ticket_id: string): string {
   // Create a unique code based on ticket ID and timestamp
   const prefix = "PARQUE-ECO"
-  const hash = ticketId.substring(0, 8).toUpperCase()
+  const hash = ticket_id.substring(0, 8).toUpperCase()
   const random = Math.random().toString(36).substring(2, 10).toUpperCase()
   return `${prefix}-${hash}-${random}`
 }
 
 // Generate QR code as a data URL using QR Server API
-export function generateQRCodeDataURL(ticketId: string, ticketCode: string): string {
+export function generate_qr_code_data_url(ticket_id: string, ticket_code: string): string {
   // Use QR Server API to generate QR code
-  const qrData = encodeURIComponent(ticketCode)
+  const qr_data = encodeURIComponent(ticket_code)
   const size = 300
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${qrData}&format=png&color=2d5016&bgcolor=ffffff`
+  const qr_url = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${qr_data}&format=png&color=2d5016&bgcolor=ffffff`
 
-  return qrUrl
+  return qr_url
 }
 
 // Generate QR code as base64 for email attachment
-export async function generateQRCodeBase64(ticketCode: string): Promise<string> {
+export async function generate_qr_code_base64(ticket_code: string): Promise<string> {
   try {
-    const qrData = encodeURIComponent(ticketCode)
+    const qr_data = encodeURIComponent(ticket_code)
     const size = 300
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${qrData}&format=png&color=2d5016&bgcolor=ffffff`
+    const qr_url = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${qr_data}&format=png&color=2d5016&bgcolor=ffffff`
 
     // Fetch the QR code image
-    const response = await fetch(qrUrl)
+    const response = await fetch(qr_url)
     const blob = await response.blob()
 
     // Convert to base64
@@ -34,8 +34,8 @@ export async function generateQRCodeBase64(ticketCode: string): Promise<string> 
       reader.onloadend = () => {
         const base64 = reader.result as string
         // Remove the data:image/png;base64, prefix
-        const base64Data = base64.split(",")[1]
-        resolve(base64Data)
+        const base64_data = base64.split(",")[1]
+        resolve(base64_data)
       }
       reader.onerror = reject
       reader.readAsDataURL(blob)

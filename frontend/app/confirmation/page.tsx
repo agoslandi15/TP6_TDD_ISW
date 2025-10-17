@@ -7,7 +7,7 @@ import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import type { Ticket } from "@/lib/park-data"
-import { generateTicketCode, generateQRCodeDataURL } from "@/lib/qr-generator"
+import { generate_ticket_code, generate_qr_code_data_url } from "@/lib/qr-generator"
 import { CheckCircle2, Calendar, Users, CreditCard, Download, Home, Loader2, QrCode, Hash } from "lucide-react"
 
 function ConfirmationContent() {
@@ -18,9 +18,9 @@ function ConfirmationContent() {
 
   const [ticket, setTicket] = useState<Ticket | null>(null)
   // const [emailContent, setEmailContent] = useState<string>("")
-  const [isLoading, setIsLoading] = useState(true)
-  const [ticketCode, setTicketCode] = useState<string>("")
-  const [qrCodeUrl, setQrCodeUrl] = useState<string>("")
+  const [is_loading, set_is_loading] = useState(true)
+  const [ticket_code, set_ticket_code] = useState<string>("")
+  const [qr_code_url, set_qr_code_url] = useState<string>("")
 
   useEffect(() => {
     const loadTicket = async () => {
@@ -42,12 +42,12 @@ function ConfirmationContent() {
       setTicket(foundTicket)
       
       // Generar código y QR
-      const code = generateTicketCode(foundTicket.id)
-      const qrUrl = generateQRCodeDataURL(foundTicket.id, code)
-      setTicketCode(code)
-      setQrCodeUrl(qrUrl)
+      const code = generate_ticket_code(foundTicket.id)
+      const qr_url = generate_qr_code_data_url(foundTicket.id, code)
+      set_ticket_code(code)
+      set_qr_code_url(qr_url)
 
-      setIsLoading(false)
+      set_is_loading(false)
     }
 
     loadTicket()
@@ -60,13 +60,13 @@ function ConfirmationContent() {
 ECOHARMONY PARK - ENTRADA
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-CÓDIGO DE ENTRADA: ${ticketCode}
+CÓDIGO DE ENTRADA: ${ticket_code}
 
 Número de Orden: ${ticket.id.toUpperCase()}
-Fecha de Compra: ${new Date(ticket.purchaseDate).toLocaleDateString("es-AR")}
+Fecha de Compra: ${new Date(ticket.purchase_date).toLocaleDateString("es-AR")}
 
 FECHA DE VISITA
-${new Date(ticket.visitDate + "T00:00:00").toLocaleDateString("es-AR", {
+${new Date(ticket.visit_date + "T00:00:00").toLocaleDateString("es-AR", {
   weekday: "long",
   year: "numeric",
   month: "long",
@@ -79,16 +79,16 @@ VISITANTES:
 ${ticket.visitors
   .map(
     (visitor, index) => `
-${index + 1}. Edad: ${visitor.age} años | Pase: ${visitor.passType}
+${index + 1}. Edad: ${visitor.age} años | Pase: ${visitor.pass_type}
 `,
   )
   .join("")}
 
-TOTAL PAGADO: $${ticket.totalAmount.toLocaleString("es-AR")}
-MÉTODO DE PAGO: ${ticket.paymentMethod === "card" ? "Tarjeta" : "Efectivo en Boletería"}
+TOTAL PAGADO: $${ticket.total_amount?.toLocaleString("es-AR") || "0"}
+MÉTODO DE PAGO: ${ticket.payment_method === "card" ? "Tarjeta" : "Efectivo en Boletería"}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Presenta este comprobante y el código ${ticketCode} al ingresar
+Presenta este comprobante y el código ${ticket_code} al ingresar
     `.trim()
 
     const blob = new Blob([ticketText], { type: "text/plain" })
@@ -102,7 +102,7 @@ Presenta este comprobante y el código ${ticketCode} al ingresar
     URL.revokeObjectURL(url)
   }
 
-  if (isLoading || !ticket) {
+  if (is_loading || !ticket) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -110,7 +110,7 @@ Presenta este comprobante y el código ${ticketCode} al ingresar
     )
   }
 
-  const visitDate = new Date(ticket.visitDate + "T00:00:00").toLocaleDateString("es-AR", {
+  const visitDate = new Date(ticket.visit_date + "T00:00:00").toLocaleDateString("es-AR", {
     weekday: "long",
     year: "numeric",
     month: "long",
@@ -138,7 +138,7 @@ Presenta este comprobante y el código ${ticketCode} al ingresar
           </Card>
 
           {/* QR Code and Ticket Code Display */}
-          {ticketCode && (
+          {ticket_code && (
             <Card className="border-2 border-primary">
               <CardHeader className="bg-primary/5">
                 <CardTitle className="font-display text-2xl text-center">Tu Código de Entrada</CardTitle>
@@ -151,9 +151,9 @@ Presenta este comprobante y el código ${ticketCode} al ingresar
                       <QrCode className="h-6 w-6 text-primary" />
                     </div>
                     <h3 className="font-semibold text-lg">Código QR</h3>
-                    {qrCodeUrl && (
+                    {qr_code_url && (
                       <div className="rounded-lg border-4 border-primary/20 bg-white p-4">
-                        <img src={qrCodeUrl || "/placeholder.svg"} alt="QR Code" className="h-48 w-48" />
+                        <img src={qr_code_url || "/placeholder.svg"} alt="QR Code" className="h-48 w-48" />
                       </div>
                     )}
                     <p className="text-sm text-center text-muted-foreground">
@@ -168,7 +168,7 @@ Presenta este comprobante y el código ${ticketCode} al ingresar
                     </div>
                     <h3 className="font-semibold text-lg">Código Alternativo</h3>
                     <div className="rounded-lg border-4 border-primary/20 bg-primary/5 p-6">
-                      <p className="font-mono text-3xl font-bold text-primary tracking-wider">{ticketCode}</p>
+                      <p className="font-mono text-3xl font-bold text-primary tracking-wider">{ticket_code}</p>
                     </div>
                     <p className="text-sm text-center text-muted-foreground">Usa este código si el QR no funciona</p>
                   </div>
@@ -219,7 +219,7 @@ Presenta este comprobante y el código ${ticketCode} al ingresar
                   <div>
                     <div className="text-sm text-muted-foreground">Método de Pago</div>
                     <div className="font-semibold">
-                      {ticket.paymentMethod === "card" ? "Tarjeta de Crédito/Débito" : "Efectivo en Boletería"}
+                      {ticket.payment_method === "card" ? "Tarjeta de Crédito/Débito" : "Efectivo en Boletería"}
                     </div>
                   </div>
                 </div>
@@ -231,7 +231,7 @@ Presenta este comprobante y el código ${ticketCode} al ingresar
                   <div>
                     <div className="text-sm text-muted-foreground">Total Pagado</div>
                     <div className="font-display text-xl font-bold text-primary">
-                      ${ticket.totalAmount.toLocaleString("es-AR")}
+                      ${ticket.total_amount?.toLocaleString("es-AR") || "0"}
                     </div>
                   </div>
                 </div>
@@ -249,12 +249,12 @@ Presenta este comprobante y el código ${ticketCode} al ingresar
                       <div className="flex items-center gap-2">
                         <span
                           className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                            visitor.passType === "VIP"
+                            visitor.pass_type === "VIP"
                               ? "bg-secondary/20 text-secondary-dark"
                               : "bg-primary/10 text-primary"
                           }`}
                         >
-                          {visitor.passType}
+                          {visitor.pass_type}
                         </span>
                         {visitor.age !== null && visitor.age <= 15 && visitor.age >= 4 && (
                           <span className="rounded-full bg-success/10 px-3 py-1 text-xs font-semibold text-success">
@@ -272,7 +272,7 @@ Presenta este comprobante y el código ${ticketCode} al ingresar
                 </div>
               </div>
 
-              {ticket.paymentMethod === "cash" && (
+              {ticket.payment_method === "cash" && (
                 <div className="rounded-lg border-2 border-warning/20 bg-warning/5 p-4">
                   <p className="font-semibold text-warning-dark">Importante:</p>
                   <p className="mt-1 text-sm text-muted-foreground">
@@ -309,7 +309,7 @@ Presenta este comprobante y el código ${ticketCode} al ingresar
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="mt-1 text-primary">•</span>
-                  <span>Presenta tu comprobante y el código {ticketCode} al ingresar al parque</span>
+                  <span>Presenta tu comprobante y el código {ticket_code} al ingresar al parque</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="mt-1 text-primary">•</span>

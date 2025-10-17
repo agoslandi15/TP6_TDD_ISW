@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { use_auth } from "@/lib/auth-context"
-import { useComprarEntradas } from "@/hooks/useComprarEntradas"
+import { use_comprar_entradas } from "../hooks/useComprarEntradas"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -11,12 +11,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { isParkOpen, getMinDate, calculateTotal, type Ticket, isChristmas, isNewYear, isWithinOneMonth } from "@/lib/park-data"
+import { is_park_open, get_min_date, calculate_total, type Ticket, is_christmas, is_new_year, is_within_one_month } from "@/lib/park-data"
 import { Calendar, Users, CreditCard, AlertCircle, CheckCircle2 } from "lucide-react"
 
 interface Visitor {
   age: number | null
-  passType: "VIP" | "Regular"
+  pass_type: "VIP" | "Regular"
 }
 
 export function TicketPurchaseForm() {
@@ -27,11 +27,11 @@ export function TicketPurchaseForm() {
   // Form state
   const [visitDate, setVisitDate] = useState("")
   const [quantity, setQuantity] = useState(1)
-  const [visitors, setVisitors] = useState<Visitor[]>([{ age: null, passType: "Regular" }])
+  const [visitors, setVisitors] = useState<Visitor[]>([{ age: null, pass_type: "Regular" }])
   const [paymentMethod, setPaymentMethod] = useState<"cash" | "card" | "">("")
 
   // Hook para manejar la compra
-  const { comprarEntradas, redirectToPayment, redirectToConfirmation, isLoading, error: compraError } = useComprarEntradas()
+  const { comprar_entradas, redirect_to_payment, redirect_to_confirmation, is_loading, error: compra_error } = use_comprar_entradas()
   
   // Validation errors
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -52,19 +52,19 @@ export function TicketPurchaseForm() {
         errorMessages.push("La fecha debe ser hoy o en el futuro")
       } else {
         // Solo validar las otras restricciones si la fecha no está en el pasado
-        if (isChristmas(selectedDate)) {
+        if (is_christmas(selectedDate)) {
           errorMessages.push("El parque está cerrado el 25 de diciembre (Navidad)")
         }
         
-        if (isNewYear(selectedDate)) {
+        if (is_new_year(selectedDate)) {
           errorMessages.push("El parque está cerrado el 1 de enero (Año Nuevo)")
         }
         
-        if (!isParkOpen(selectedDate)) {
+        if (!is_park_open(selectedDate)) {
           errorMessages.push("El parque está cerrado en la fecha seleccionada (cerrado los lunes)")
         }
         
-        if (!isWithinOneMonth(selectedDate)) {
+        if (!is_within_one_month(selectedDate)) {
           errorMessages.push("Solo puedes comprar entradas con máximo un mes de anticipación")
         }
       }
@@ -115,7 +115,7 @@ export function TicketPurchaseForm() {
     if (newQuantity > currentVisitors.length) {
       // Add new visitors
       for (let i = currentVisitors.length; i < newQuantity; i++) {
-        currentVisitors.push({ age: null, passType: "Regular" })
+        currentVisitors.push({ age: null, pass_type: "Regular" })
       }
     } else if (newQuantity < currentVisitors.length) {
       // Remove excess visitors
@@ -153,7 +153,7 @@ export function TicketPurchaseForm() {
     setErrors({})
 
     try {
-      const resultado = await comprarEntradas(
+      const resultado = await comprar_entradas(
         visitDate,
         quantity,
         visitors,
@@ -165,9 +165,9 @@ export function TicketPurchaseForm() {
       if (resultado.success) {
         // Redirigir según método de pago
         if (paymentMethod === "card") {
-          redirectToPayment(resultado.codigoEntrada!)
+          redirect_to_payment(resultado.codigoEntrada!)
         } else {
-          redirectToConfirmation(resultado.codigoEntrada!)
+          redirect_to_confirmation(resultado.codigoEntrada!)
         }
       } else {
         setErrors({ submit: resultado.error || "Error desconocido al procesar la compra" })
@@ -178,7 +178,7 @@ export function TicketPurchaseForm() {
     }
   }
 
-  const totalAmount = calculateTotal(visitors)
+  const total_amount = calculate_total(visitors)
 
   return (
     <div className="mx-auto max-w-4xl">
@@ -241,7 +241,7 @@ export function TicketPurchaseForm() {
                 <Input
                   id="visitDate"
                   type="date"
-                  min={getMinDate()}
+                  min={get_min_date()}
                   value={visitDate}
                   onChange={(e) => setVisitDate(e.target.value)}
                   className={errors.visitDate ? "border-destructive" : ""}
@@ -336,8 +336,8 @@ export function TicketPurchaseForm() {
                         <div className="space-y-2">
                           <Label htmlFor={`pass-${index}`}>Tipo de Pase</Label>
                           <Select
-                            value={visitor.passType}
-                            onValueChange={(value) => updateVisitor(index, "passType", value)}
+                            value={visitor.pass_type}
+                            onValueChange={(value) => updateVisitor(index, "pass_type", value)}
                           >
                             <SelectTrigger id={`pass-${index}`}>
                               <SelectValue />
@@ -373,7 +373,7 @@ export function TicketPurchaseForm() {
                   <div className="flex items-center justify-between">
                     <span className="font-semibold">Total a Pagar:</span>
                     <span className="font-display text-2xl font-bold text-primary">
-                      ${totalAmount.toLocaleString("es-AR")}
+                      ${total_amount.toLocaleString("es-AR")}
                     </span>
                   </div>
                   <p className="mt-1 text-sm text-muted-foreground">
@@ -420,23 +420,23 @@ export function TicketPurchaseForm() {
                 </div>
               </div>
 
-              {(errors.submit || compraError) && (
+              {(errors.submit || compra_error) && (
                 <Alert variant="destructive">
                   <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>{errors.submit || compraError}</AlertDescription>
+                  <AlertDescription>{errors.submit || compra_error}</AlertDescription>
                 </Alert>
               )}
 
               <div className="flex items-center justify-between border-t pt-4">
-                <Button variant="outline" onClick={() => setStep(2)} disabled={isLoading}>
+                <Button variant="outline" onClick={() => setStep(2)} disabled={is_loading}>
                   Atrás
                 </Button>
                 <Button 
                   onClick={handleSubmit} 
-                  disabled={isLoading}
+                  disabled={is_loading}
                   className="bg-primary hover:bg-primary-dark"
                 >
-                  {isLoading ? "Procesando..." : "Confirmar Compra"}
+                  {is_loading ? "Procesando..." : "Confirmar Compra"}
                 </Button>
               </div>
             </>

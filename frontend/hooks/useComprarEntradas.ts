@@ -1,128 +1,128 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { comprarEntradasService } from '@/services/comprarEntradas';
+import comprar_entradas_service from '../services/comprarEntradas';
 
 interface Visitor {
   age: number | null;
-  passType: "VIP" | "Regular";
+  pass_type: "VIP" | "Regular";
 }
 
-interface UseComprarEntradasProps {
-  onSuccess?: (codigoEntrada: string) => void;
-  onError?: (error: string) => void;
+interface use_comprar_entradas_props {
+  on_success?: (codigo_entrada: string) => void;
+  on_error?: (error: string) => void;
 }
 
-export function useComprarEntradas({ onSuccess, onError }: UseComprarEntradasProps = {}) {
+export function use_comprar_entradas({ on_success, on_error }: use_comprar_entradas_props = {}) {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [is_loading, set_is_loading] = useState(false);
+  const [error, set_error] = useState<string | null>(null);
 
-  const comprarEntradas = async (
-    visitDate: string,
+  const comprar_entradas = async (
+    visit_date: string,
     quantity: number,
     visitors: Visitor[],
-    paymentMethod: "cash" | "card",
-    userEmail: string,
-    userId: string
+    payment_method: "cash" | "card",
+    user_email: string,
+    user_id: string
   ) => {
-    setIsLoading(true);
-    setError(null);
+    set_is_loading(true);
+    set_error(null);
 
     try {
       // Preparar datos para el backend
-      const datosCompra = {
-        fecha_evento: visitDate,
+      const datos_compra = {
+        fecha_evento: visit_date,
         cantidad_entradas: quantity,
         edad_comprador: visitors.map(v => v.age!),
-        tipo_entrada: visitors.map(v => v.passType),
-        forma_pago: paymentMethod === "card" ? "mercado pago" : "efectivo",
-        email_usuario: userEmail
+        tipo_entrada: visitors.map(v => v.pass_type),
+        forma_pago: payment_method === "card" ? "mercado pago" : "efectivo",
+        email_usuario: user_email
       };
 
-      console.log("Enviando datos al backend:", datosCompra);
+      console.log("Enviando datos al backend:", datos_compra);
 
       // Realizar la compra usando el service
-      const resultado = await comprarEntradasService.comprarEntradas(datosCompra) as any;
+      const resultado = await comprar_entradas_service.comprar_entradas(datos_compra) as any;
 
       if (resultado.success) {
         console.log("Compra exitosa:", resultado.data);
         
         // Guardar datos de la compra en localStorage para las páginas de confirmación
-        const ticketData = {
+        const ticket_data = {
           id: resultado.data.codigo_entrada,
-          userId: userId,
-          visitDate,
+          user_id: user_id,
+          visit_date: visit_date,
           quantity,
           visitors,
-          paymentMethod: paymentMethod,
-          totalAmount: resultado.data.total,
-          purchaseDate: new Date().toISOString(),
+          payment_method: payment_method,
+          total_amount: resultado.data.total,
+          purchase_date: new Date().toISOString(),
           status: "confirmed",
           codigoEntrada: resultado.data.codigo_entrada
         };
 
-        localStorage.setItem(`ticket_${resultado.data.codigo_entrada}`, JSON.stringify(ticketData));
+        localStorage.setItem(`ticket_${resultado.data.codigo_entrada}`, JSON.stringify(ticket_data));
 
         // Callback de éxito
-        if (onSuccess) {
-          onSuccess(resultado.data.codigo_entrada);
+        if (on_success) {
+          on_success(resultado.data.codigo_entrada);
         }
 
         return {
           success: true,
           codigoEntrada: resultado.data.codigo_entrada,
           total: resultado.data.total,
-          data: ticketData
+          data: ticket_data
         };
       } else {
-        const errorMessage = resultado.error || "Error desconocido al procesar la compra";
-        setError(errorMessage);
+        const error_message = resultado.error || "Error desconocido al procesar la compra";
+        set_error(error_message);
         
-        if (onError) {
-          onError(errorMessage);
+        if (on_error) {
+          on_error(error_message);
         }
 
         return {
           success: false,
-          error: errorMessage
+          error: error_message
         };
       }
     } catch (error) {
       console.error("Error al realizar la compra:", error);
-      const errorMessage = "Error de conexión. Por favor, verifica que el backend esté funcionando.";
-      setError(errorMessage);
+      const error_message = "Error de conexión. Por favor, verifica que el backend esté funcionando.";
+      set_error(error_message);
       
-      if (onError) {
-        onError(errorMessage);
+      if (on_error) {
+        on_error(error_message);
       }
 
       return {
         success: false,
-        error: errorMessage
+        error: error_message
       };
     } finally {
-      setIsLoading(false);
+      set_is_loading(false);
     }
   };
 
-  const redirectToPayment = (ticketId: string) => {
-    router.push(`/payment?ticketId=${ticketId}`);
+  const redirect_to_payment = (ticket_id: string) => {
+    router.push(`/payment?ticketId=${ticket_id}`);
   };
 
-  const redirectToConfirmation = (ticketId: string) => {
-    router.push(`/confirmation?ticketId=${ticketId}`);
+  const redirect_to_confirmation = (ticket_id: string) => {
+    router.push(`/confirmation?ticketId=${ticket_id}`);
   };
 
-  const clearError = () => {
-    setError(null);
+  const clear_error = () => {
+    set_error(null);
   };
 
   return {
-    comprarEntradas,
-    redirectToPayment,
-    redirectToConfirmation,
-    clearError,
-    isLoading,
+    comprar_entradas,
+    redirect_to_payment,
+    redirect_to_confirmation,
+    clear_error,
+    is_loading,
     error
   };
 }

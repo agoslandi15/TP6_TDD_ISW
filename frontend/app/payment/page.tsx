@@ -103,7 +103,7 @@ function PaymentContent() {
     )
   }
 
-  const formattedDate = new Date(ticket.visitDate + "T00:00:00").toLocaleDateString("es-AR", {
+  const formattedDate = new Date(ticket.visit_date + "T00:00:00").toLocaleDateString("es-AR", {
     weekday: "long",
     day: "numeric",
     month: "long",
@@ -147,7 +147,7 @@ function PaymentContent() {
                     Total a pagar
                   </span>
                   <span className="text-3xl font-semibold" style={{ color: MP_COLORS.text }}>
-                    ${ticket.totalAmount.toLocaleString("es-AR")}
+                    ${ticket.total_amount?.toLocaleString("es-AR") || "0"}
                   </span>
                 </div>
 

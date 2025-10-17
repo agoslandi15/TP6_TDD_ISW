@@ -1,23 +1,23 @@
 import type { Ticket } from "./park-data"
-import { generateTicketCode, generateQRCodeDataURL, generateQRCodeBase64 } from "./qr-generator"
+import { generate_ticket_code, generate_qr_code_data_url, generate_qr_code_base64 } from "./qr-generator"
 
-interface EmailData {
+interface email_data {
   to: string
-  userName: string
+  user_name: string
   ticket: Ticket
 }
 
-export async function sendConfirmationEmail(
-  data: EmailData,
-): Promise<{ success: boolean; code: string; qrUrl: string; testMode?: boolean; sentTo?: string }> {
+export async function send_confirmation_email(
+  data: email_data,
+): Promise<{ success: boolean; code: string; qr_url: string; test_mode?: boolean; sent_to?: string }> {
   try {
     // Generate unique code and QR
-    const ticketCode = generateTicketCode(data.ticket.id)
-    const qrCodeUrl = generateQRCodeDataURL(data.ticket.id, ticketCode)
+    const ticket_code = generate_ticket_code(data.ticket.id)
+    const qr_code_url = generate_qr_code_data_url(data.ticket.id, ticket_code)
 
-    const emailContent = generateEmailHTML(data, ticketCode)
+    const email_content = generate_email_html(data, ticket_code)
 
-    const qrCodeBase64 = await generateQRCodeBase64(ticketCode)
+    const qr_code_base64 = await generate_qr_code_base64(ticket_code)
 
     const response = await fetch("/api/send-email", {
       method: "POST",
@@ -27,9 +27,9 @@ export async function sendConfirmationEmail(
       body: JSON.stringify({
         to: data.to,
         subject: "Confirmación de Compra - EcoHarmony Park",
-        html: emailContent,
-        ticketCode: ticketCode,
-        qrCodeBase64: qrCodeBase64, // Send base64 instead of URL
+        html: email_content,
+        ticketCode: ticket_code,
+        qrCodeBase64: qr_code_base64, // Send base64 instead of URL
       }),
     })
 
@@ -48,30 +48,30 @@ export async function sendConfirmationEmail(
       id: Math.random().toString(36).substr(2, 9),
       to: data.to,
       subject: "Confirmación de Compra - EcoHarmony Park",
-      content: generateEmailContent(data, ticketCode),
+      content: generate_email_content(data, ticket_code),
       sentAt: new Date().toISOString(),
-      ticketId: data.ticket.id,
-      ticketCode,
-      qrCodeUrl,
+      ticket_id: data.ticket.id,
+      ticket_code: ticket_code,
+      qr_code_url: qr_code_url,
     })
     localStorage.setItem("park_emails", JSON.stringify(emails))
 
     return { 
       success: true, 
-      code: ticketCode, 
-      qrUrl: qrCodeUrl,
-      testMode: result.testMode,
-      sentTo: result.sentTo
+      code: ticket_code, 
+      qr_url: qr_code_url,
+      test_mode: result.testMode,
+      sent_to: result.sentTo
     }
   } catch (error) {
     console.error("[v0] Error sending email:", error)
-    return { success: false, code: "", qrUrl: "" }
+    return { success: false, code: "", qr_url: "" }
   }
 }
 
-function generateEmailHTML(data: EmailData, ticketCode: string): string {
-  const { userName, ticket } = data
-  const visitDate = new Date(ticket.visitDate + "T00:00:00").toLocaleDateString("es-AR", {
+function generate_email_html(data: email_data, ticket_code: string): string {
+  const { user_name, ticket } = data
+  const visit_date = new Date(ticket.visit_date + "T00:00:00").toLocaleDateString("es-AR", {
     weekday: "long",
     year: "numeric",
     month: "long",
@@ -102,7 +102,7 @@ function generateEmailHTML(data: EmailData, ticketCode: string): string {
            Greeting 
           <tr>
             <td style="padding: 30px 40px 20px 40px;">
-              <h2 style="color: #2d5016; margin: 0 0 15px 0; font-size: 24px;">¡Hola ${userName}!</h2>
+              <h2 style="color: #2d5016; margin: 0 0 15px 0; font-size: 24px;">¡Hola ${user_name}!</h2>
               <p style="color: #666; line-height: 1.6; margin: 0;">Gracias por tu compra. Tu entrada ha sido confirmada exitosamente.</p>
             </td>
           </tr>
@@ -114,7 +114,7 @@ function generateEmailHTML(data: EmailData, ticketCode: string): string {
                 <tr>
                   <td style="padding: 25px; text-align: center;">
                     <p style="color: #2d5016; margin: 0 0 10px 0; font-size: 14px; font-weight: bold;">TU CÓDIGO DE ENTRADA</p>
-                    <p style="color: #2d5016; margin: 0; font-size: 32px; font-weight: bold; letter-spacing: 3px; font-family: 'Courier New', monospace;">${ticketCode}</p>
+                    <p style="color: #2d5016; margin: 0; font-size: 32px; font-weight: bold; letter-spacing: 3px; font-family: 'Courier New', monospace;">${ticket_code}</p>
                     <p style="color: #4a7c2c; margin: 15px 0 0 0; font-size: 13px;">Presenta este código al ingresar al parque</p>
                   </td>
                 </tr>
@@ -129,7 +129,7 @@ function generateEmailHTML(data: EmailData, ticketCode: string): string {
               <table width="100%" cellpadding="8" cellspacing="0">
                 <tr>
                   <td style="color: #666; font-size: 14px; padding: 8px 0;">📅 Fecha de Visita:</td>
-                  <td style="color: #333; font-size: 14px; font-weight: bold; text-align: right; padding: 8px 0;">${visitDate}</td>
+                  <td style="color: #333; font-size: 14px; font-weight: bold; text-align: right; padding: 8px 0;">${visit_date}</td>
                 </tr>
                 <tr>
                   <td style="color: #666; font-size: 14px; padding: 8px 0;">🎫 Cantidad de Entradas:</td>
@@ -137,11 +137,11 @@ function generateEmailHTML(data: EmailData, ticketCode: string): string {
                 </tr>
                 <tr>
                   <td style="color: #666; font-size: 14px; padding: 8px 0;">💳 Método de Pago:</td>
-                  <td style="color: #333; font-size: 14px; font-weight: bold; text-align: right; padding: 8px 0;">${ticket.paymentMethod === "card" ? "Tarjeta" : "Efectivo"}</td>
+                  <td style="color: #333; font-size: 14px; font-weight: bold; text-align: right; padding: 8px 0;">${ticket.payment_method === "card" ? "Tarjeta" : "Efectivo"}</td>
                 </tr>
                 <tr>
                   <td style="color: #666; font-size: 14px; padding: 8px 0;">💰 Total:</td>
-                  <td style="color: #2d5016; font-size: 18px; font-weight: bold; text-align: right; padding: 8px 0;">$${ticket.totalAmount.toLocaleString("es-AR")}</td>
+                  <td style="color: #2d5016; font-size: 18px; font-weight: bold; text-align: right; padding: 8px 0;">$${ticket.total_amount.toLocaleString("es-AR")}</td>
                 </tr>
               </table>
             </td>
@@ -153,10 +153,10 @@ function generateEmailHTML(data: EmailData, ticketCode: string): string {
               <h3 style="color: #2d5016; margin: 0 0 15px 0; font-size: 18px; border-bottom: 2px solid #e8f5e9; padding-bottom: 10px;">Visitantes</h3>
               ${ticket.visitors
                 .map(
-                  (visitor, index) => `
+                  (visitor: { age: number | null; pass_type: "VIP" | "Regular" }, index: number) => `
                 <div style="background-color: #f9f9f9; border-left: 3px solid #4a7c2c; padding: 12px; margin-bottom: 10px; border-radius: 4px;">
-                  <p style="margin: 0; color: #333; font-size: 14px;"><strong>Visitante ${index + 1}:</strong> ${visitor.age} años - Pase ${visitor.passType}</p>
-                  ${visitor.age < 5 ? '<p style="margin: 5px 0 0 0; color: #4a7c2c; font-size: 12px;">✓ Descuento 50% aplicado</p>' : ""}
+                  <p style="margin: 0; color: #333; font-size: 14px;"><strong>Visitante ${index + 1}:</strong> ${visitor.age ?? 'No especificada'} años - Pase ${visitor.pass_type}</p>
+                  ${visitor.age !== null && visitor.age < 5 ? '<p style="margin: 5px 0 0 0; color: #4a7c2c; font-size: 12px;">✓ Descuento 50% aplicado</p>' : ""}
                 </div>
               `,
                 )
@@ -173,9 +173,9 @@ function generateEmailHTML(data: EmailData, ticketCode: string): string {
                     <h4 style="color: #f57c00; margin: 0 0 10px 0; font-size: 16px;">📌 Información Importante</h4>
                     <ul style="color: #666; margin: 0; padding-left: 20px; line-height: 1.8; font-size: 13px;">
                       <li>El parque abre de martes a domingo, 9:00 AM - 6:00 PM</li>
-                      <li>Presenta tu código QR (adjunto) o el código ${ticketCode}</li>
+                      <li>Presenta tu código QR (adjunto) o el código ${ticket_code}</li>
                       <li>Si el QR no funciona, usa el código alfanumérico</li>
-                      ${ticket.paymentMethod === "cash" ? "<li><strong>Recuerda llevar el efectivo al llegar</strong></li>" : ""}
+                      ${ticket.payment_method === "cash" ? "<li><strong>Recuerda llevar el efectivo al llegar</strong></li>" : ""}
                     </ul>
                   </td>
                 </tr>
@@ -202,9 +202,9 @@ function generateEmailHTML(data: EmailData, ticketCode: string): string {
 }
 
 // Keep text version for localStorage preview
-function generateEmailContent(data: EmailData, ticketCode: string): string {
-  const { userName, ticket } = data
-  const visitDate = new Date(ticket.visitDate + "T00:00:00").toLocaleDateString("es-AR", {
+function generate_email_content(data: email_data, ticket_code: string): string {
+  const { user_name, ticket } = data
+  const visit_date = new Date(ticket.visit_date + "T00:00:00").toLocaleDateString("es-AR", {
     weekday: "long",
     year: "numeric",
     month: "long",
@@ -212,7 +212,7 @@ function generateEmailContent(data: EmailData, ticketCode: string): string {
   })
 
   return `
-Hola ${userName},
+Hola ${user_name},
 
 ¡Gracias por tu compra en EcoHarmony Park!
 
@@ -220,7 +220,7 @@ Hola ${userName},
 TU CÓDIGO DE ENTRADA
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-${ticketCode}
+${ticket_code}
 
 Presenta este código al ingresar al parque.
 También encontrarás un código QR adjunto en este email.
@@ -231,13 +231,13 @@ DETALLES DE TU COMPRA
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Número de Orden: ${ticket.id.toUpperCase()}
-Fecha de Compra: ${new Date(ticket.purchaseDate).toLocaleDateString("es-AR")}
+Fecha de Compra: ${new Date(ticket.purchase_date).toLocaleDateString("es-AR")}
 Estado: ${ticket.status === "confirmed" ? "CONFIRMADO" : "PENDIENTE"}
 
 INFORMACIÓN DE LA VISITA
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Fecha de Visita: ${visitDate}
+Fecha de Visita: ${visit_date}
 Cantidad de Entradas: ${ticket.quantity}
 
 VISITANTES
@@ -245,11 +245,11 @@ VISITANTES
 
 ${ticket.visitors
   .map(
-    (visitor, index) => `
+    (visitor: { age: number | null; pass_type: "VIP" | "Regular" }, index: number) => `
 Visitante ${index + 1}:
-  - Edad: ${visitor.age} años
-  - Tipo de Pase: ${visitor.passType}
-  ${visitor.age < 5 ? "  - Descuento aplicado: 50% (menor de 5 años)" : ""}
+  - Edad: ${visitor.age ?? 'No especificada'} años
+  - Tipo de Pase: ${visitor.pass_type}
+  ${visitor.age !== null && visitor.age < 5 ? "  - Descuento aplicado: 50% (menor de 5 años)" : ""}
 `,
   )
   .join("\n")}
@@ -257,11 +257,11 @@ Visitante ${index + 1}:
 PAGO
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Método de Pago: ${ticket.paymentMethod === "card" ? "Tarjeta de Crédito/Débito" : "Efectivo en Boletería"}
-Total Pagado: $${ticket.totalAmount.toLocaleString("es-AR")}
+Método de Pago: ${ticket.payment_method === "card" ? "Tarjeta de Crédito/Débito" : "Efectivo en Boletería"}
+Total Pagado: $${ticket.total_amount.toLocaleString("es-AR")}
 
 ${
-  ticket.paymentMethod === "cash"
+  ticket.payment_method === "cash"
     ? `
 IMPORTANTE: Recuerda llevar el efectivo al llegar al parque.
 Presenta este email en la boletería para retirar tus entradas.
@@ -274,7 +274,7 @@ INFORMACIÓN IMPORTANTE
 
 - El parque abre de martes a domingo
 - Horario: 9:00 AM - 6:00 PM
-- Presenta tu código QR o el código ${ticketCode} al ingresar
+- Presenta tu código QR o el código ${ticket_code} al ingresar
 - Si el QR no funciona, usa el código alfanumérico
 - Las entradas no son reembolsables
 
@@ -286,7 +286,7 @@ ecoharmonypark@gmail.com
   `.trim()
 }
 
-export function getEmailsByTicketId(ticketId: string) {
+export function get_emails_by_ticket_id(ticket_id: string) {
   const emails = JSON.parse(localStorage.getItem("park_emails") || "[]")
-  return emails.filter((email: any) => email.ticketId === ticketId)
+  return emails.filter((email: any) => email.ticketId === ticket_id)
 }

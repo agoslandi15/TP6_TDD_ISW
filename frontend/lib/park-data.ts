@@ -1,54 +1,54 @@
-export interface ParkSchedule {
-  dayOfWeek: number // 0 = Sunday, 6 = Saturday
-  isOpen: boolean
+export interface park_schedule {
+  day_of_week: number // 0 = Sunday, 6 = Saturday
+  is_open: boolean
 }
 
 // Park is open Tuesday to Sunday (closed on Mondays)
-export const parkSchedule: ParkSchedule[] = [
-  { dayOfWeek: 0, isOpen: true }, // Sunday
-  { dayOfWeek: 1, isOpen: false }, // Monday - CLOSED
-  { dayOfWeek: 2, isOpen: true }, // Tuesday
-  { dayOfWeek: 3, isOpen: true }, // Wednesday
-  { dayOfWeek: 4, isOpen: true }, // Thursday
-  { dayOfWeek: 5, isOpen: true }, // Friday
-  { dayOfWeek: 6, isOpen: true }, // Saturday
+export const park_schedule: park_schedule[] = [
+  { day_of_week: 0, is_open: true }, // Sunday
+  { day_of_week: 1, is_open: false }, // Monday - CLOSED
+  { day_of_week: 2, is_open: true }, // Tuesday
+  { day_of_week: 3, is_open: true }, // Wednesday
+  { day_of_week: 4, is_open: true }, // Thursday
+  { day_of_week: 5, is_open: true }, // Friday
+  { day_of_week: 6, is_open: true }, // Saturday
 ]
 
-export function isParkOpen(date: Date): boolean {
-  const dayOfWeek = date.getDay()
-  const schedule = parkSchedule.find((s) => s.dayOfWeek === dayOfWeek)
-  return schedule?.isOpen ?? false
+export function is_park_open(date: Date): boolean {
+  const day_of_week = date.getDay()
+  const schedule = park_schedule.find((s: park_schedule) => s.day_of_week === day_of_week)
+  return schedule?.is_open ?? false
 }
 
-export function isChristmas(date: Date): boolean {
+export function is_christmas(date: Date): boolean {
   return date.getDate() === 25 && date.getMonth() === 11 // December 25
 }
 
-export function isNewYear(date: Date): boolean {
+export function is_new_year(date: Date): boolean {
   return date.getDate() === 1 && date.getMonth() === 0 // January 1
 }
 
-export function isWithinOneMonth(date: Date): boolean {
+export function is_within_one_month(date: Date): boolean {
   const today = new Date()
-  const oneMonthFromNow = new Date()
-  oneMonthFromNow.setMonth(today.getMonth() + 1)
-  return date <= oneMonthFromNow
+  const one_month_from_now = new Date()
+  one_month_from_now.setMonth(today.getMonth() + 1)
+  return date <= one_month_from_now
 }
 
-export function getMinDate(): string {
+export function get_min_date(): string {
   const today = new Date()
   return today.toISOString().split("T")[0]
 }
 
 export interface Ticket {
   id: string
-  userId: string
-  visitDate: string
+  user_id: string
+  visit_date: string
   quantity: number
-  visitors: Array<{ age: number | null; passType: "VIP" | "Regular" }>
-  paymentMethod: "cash" | "card"
-  totalAmount: number
-  purchaseDate: string
+  visitors: Array<{ age: number | null; pass_type: "VIP" | "Regular" }>
+  payment_method: "cash" | "card"
+  total_amount: number
+  purchase_date: string
   status: "pending" | "confirmed" | "cancelled"
 }
 
@@ -57,11 +57,11 @@ export const TICKET_PRICES = {
   vip: 10000,
 }
 
-export function calculateTotal(visitors: Array<{ age: number | null; passType: "VIP" | "Regular" }>): number {
+export function calculate_total(visitors: Array<{ age: number | null; pass_type: "VIP" | "Regular" }>): number {
   return visitors.reduce((total, visitor) => {
     if (visitor.age === null) return total;
     
-    const basePrice = visitor.passType === "VIP" ? TICKET_PRICES.vip : TICKET_PRICES.regular
+    const base_price = visitor.pass_type === "VIP" ? TICKET_PRICES.vip : TICKET_PRICES.regular
     
     // Gratis para menores de 3 años y mayores de 60
     if (visitor.age <= 3 || visitor.age >= 60) {
@@ -70,10 +70,10 @@ export function calculateTotal(visitors: Array<{ age: number | null; passType: "
     
     // 50% de descuento para edades entre 4 y 15
     if (visitor.age >= 4 && visitor.age <= 15) {
-      return total + basePrice * 0.5;
+      return total + base_price * 0.5;
     }
     
     // Precio completo para el resto
-    return total + basePrice;
+    return total + base_price;
   }, 0)
 }

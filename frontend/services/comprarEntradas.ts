@@ -4,7 +4,7 @@ import axios from 'axios';
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
 // Crear instancia de Axios con configuración base
-const apiClient = axios.create({
+const api_client = axios.create({
   baseURL: API_BASE_URL,
   timeout: 10000, // 10 segundos de timeout
   headers: {
@@ -13,7 +13,7 @@ const apiClient = axios.create({
 });
 
 // Interfaces TypeScript
-interface DatosCompra {
+interface datos_compra {
   fecha_evento: string;
   cantidad_entradas: number;
   edad_comprador: number[];
@@ -22,7 +22,7 @@ interface DatosCompra {
   email_usuario: string;
 }
 
-interface ResultadoCompra {
+interface resultado_compra {
   success: boolean;
   data?: any;
   status?: number;
@@ -31,24 +31,24 @@ interface ResultadoCompra {
 }
 
 // Interceptor para requests (opcional - para logging o auth)
-apiClient.interceptors.request.use(
-  (config) => {
+api_client.interceptors.request.use(
+  (config: any) => {
     console.log(`🚀 Realizando petición: ${config.method?.toUpperCase()} ${config.url}`);
     return config;
   },
-  (error) => {
+  (error: any) => {
     console.error('❌ Error en request:', error);
     return Promise.reject(error);
   }
 );
 
 // Interceptor para responses (opcional - para manejo global de errores)
-apiClient.interceptors.response.use(
-  (response) => {
+api_client.interceptors.response.use(
+  (response: any) => {
     console.log(`✅ Respuesta exitosa: ${response.status}`, response.data);
     return response;
   },
-  (error) => {
+  (error: any) => {
     console.error('❌ Error en response:', error.response?.data || error.message);
     return Promise.reject(error);
   }
@@ -57,17 +57,17 @@ apiClient.interceptors.response.use(
 /**
  * Service para comprar entradas del parque ecológico
  */
-export const comprarEntradasService = {
+export const comprar_entradas_service = {
   
   /**
    * Realizar compra de entradas
    */
-  async comprarEntradas(datosCompra: DatosCompra): Promise<ResultadoCompra> {
+  async comprar_entradas(datos_compra: datos_compra): Promise<resultado_compra> {
     try {
       // Validar datos antes de enviar
-      this.validarDatosCompra(datosCompra);
+      this.validar_datos_compra(datos_compra);
 
-      const response = await apiClient.post('/api/comprar-entrada', datosCompra);
+      const response = await api_client.post('/api/comprar-entrada', datos_compra);
       
       return {
         success: true,
@@ -108,7 +108,7 @@ export const comprarEntradasService = {
   /**
    * Validar los datos de compra antes de enviarlos
    */
-  validarDatosCompra(datosCompra: DatosCompra): void {
+  validar_datos_compra(datos_compra: datos_compra): void {
     const { 
       fecha_evento, 
       cantidad_entradas, 
@@ -116,7 +116,7 @@ export const comprarEntradasService = {
       tipo_entrada, 
       forma_pago, 
       email_usuario 
-    } = datosCompra;
+    } = datos_compra;
 
     // Validar campos requeridos
     if (!fecha_evento) throw new Error('La fecha del evento es requerida');
@@ -135,8 +135,8 @@ export const comprarEntradasService = {
     }
 
     // Validar formato de email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email_usuario)) {
+    const email_regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email_regex.test(email_usuario)) {
       throw new Error('El formato del email no es válido');
     }
 
@@ -146,15 +146,15 @@ export const comprarEntradasService = {
     }
 
     // Validar formas de pago válidas
-    const formasPagoValidas = ['mercado pago', 'efectivo'];
-    if (!formasPagoValidas.includes(forma_pago.toLowerCase())) {
+    const formas_pago_validas = ['mercado pago', 'efectivo'];
+    if (!formas_pago_validas.includes(forma_pago.toLowerCase())) {
       throw new Error('Forma de pago no válida. Use "mercado pago" o "efectivo"');
     }
 
     // Validar tipos de entrada válidos
-    const tiposEntradaValidos = ['Regular', 'VIP'];
+    const tipos_entrada_validos = ['Regular', 'VIP'];
     tipo_entrada.forEach((tipo, index) => {
-      if (!tiposEntradaValidos.includes(tipo)) {
+      if (!tipos_entrada_validos.includes(tipo)) {
         throw new Error(`Tipo de entrada no válido en la posición ${index + 1}. Use "Regular" o "VIP"`);
       }
     });
@@ -167,8 +167,8 @@ export const comprarEntradasService = {
     });
 
     // Validar formato de fecha
-    const fechaRegex = /^\d{4}-\d{2}-\d{2}$/;
-    if (!fechaRegex.test(fecha_evento)) {
+    const fecha_regex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!fecha_regex.test(fecha_evento)) {
       throw new Error('El formato de fecha debe ser YYYY-MM-DD');
     }
   },
@@ -176,7 +176,7 @@ export const comprarEntradasService = {
   /**
    * Función auxiliar para crear datos de compra con formato correcto
    */
-  crearDatosCompra(params: any): DatosCompra {
+  crear_datos_compra(params: any): datos_compra {
     return {
       fecha_evento: params.fechaEvento,
       cantidad_entradas: parseInt(params.cantidadEntradas),
@@ -189,10 +189,10 @@ export const comprarEntradasService = {
 };
 
 // Export por defecto del service
-export default comprarEntradasService;
+export default comprar_entradas_service;
 
 // Exportar también la instancia de axios por si se necesita en otros lugares
-export { apiClient };
+export { api_client };
 
 // Exportar tipos
-export type { DatosCompra, ResultadoCompra };
+export type { datos_compra, resultado_compra };
