@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/lib/auth-context"
+import { useComprarEntradas } from "@/hooks/useComprarEntradas"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -29,6 +30,9 @@ export function TicketPurchaseForm() {
   const [visitors, setVisitors] = useState<Visitor[]>([{ age: null, passType: "Regular" }])
   const [paymentMethod, setPaymentMethod] = useState<"cash" | "card" | "">("")
 
+  // Hook para manejar la compra
+  const { comprarEntradas, redirectToPayment, redirectToConfirmation, isLoading, error: compraError } = useComprarEntradas()
+  
   // Validation errors
   const [errors, setErrors] = useState<Record<string, string>>({})
 
@@ -141,36 +145,36 @@ export function TicketPurchaseForm() {
     }
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!validateStep3()) {
       return
     }
 
-    // Create ticket
-    const ticket: Ticket = {
-      id: Math.random().toString(36).substr(2, 9),
-      userId: user!.id,
-      visitDate,
-      quantity,
-      visitors,
-      paymentMethod: paymentMethod as "cash" | "card",
-      totalAmount: calculateTotal(visitors),
-      purchaseDate: new Date().toISOString(),
-      status: "pending",
-    }
+    setErrors({})
 
-    // Save ticket to localStorage
-    const tickets = JSON.parse(localStorage.getItem("park_tickets") || "[]")
-    tickets.push(ticket)
-    localStorage.setItem("park_tickets", JSON.stringify(tickets))
+    try {
+      const resultado = await comprarEntradas(
+        visitDate,
+        quantity,
+        visitors,
+        paymentMethod as "cash" | "card",
+        user!.email,
+        user!.id
+      )
 
-    // Redirect based on payment method
-    if (paymentMethod === "card") {
-      // Redirect to payment page (Mercado Pago simulation)
-      router.push(`/payment?ticketId=${ticket.id}`)
-    } else {
-      // Redirect to confirmation page
-      router.push(`/confirmation?ticketId=${ticket.id}`)
+      if (resultado.success) {
+        // Redirigir según método de pago
+        if (paymentMethod === "card") {
+          redirectToPayment(resultado.codigoEntrada!)
+        } else {
+          redirectToConfirmation(resultado.codigoEntrada!)
+        }
+      } else {
+        setErrors({ submit: resultado.error || "Error desconocido al procesar la compra" })
+      }
+    } catch (error) {
+      console.error("Error inesperado:", error)
+      setErrors({ submit: "Error inesperado. Por favor, intenta nuevamente." })
     }
   }
 
@@ -416,12 +420,23 @@ export function TicketPurchaseForm() {
                 </div>
               </div>
 
+              {(errors.submit || compraError) && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{errors.submit || compraError}</AlertDescription>
+                </Alert>
+              )}
+
               <div className="flex items-center justify-between border-t pt-4">
-                <Button variant="outline" onClick={() => setStep(2)}>
+                <Button variant="outline" onClick={() => setStep(2)} disabled={isLoading}>
                   Atrás
                 </Button>
-                <Button onClick={handleSubmit} className="bg-primary hover:bg-primary-dark">
-                  Confirmar Compra
+                <Button 
+                  onClick={handleSubmit} 
+                  disabled={isLoading}
+                  className="bg-primary hover:bg-primary-dark"
+                >
+                  {isLoading ? "Procesando..." : "Confirmar Compra"}
                 </Button>
               </div>
             </>

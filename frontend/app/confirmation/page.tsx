@@ -29,14 +29,16 @@ function ConfirmationContent() {
         return
       }
 
-      const tickets = JSON.parse(localStorage.getItem("park_tickets") || "[]")
-      const foundTicket = tickets.find((t: Ticket) => t.id === ticketId)
-
-      if (!foundTicket) {
+      // Obtener datos del ticket desde localStorage (guardado después de la compra exitosa)
+      const ticketData = localStorage.getItem(`ticket_${ticketId}`)
+      
+      if (!ticketData) {
+        console.error("No se encontraron datos del ticket")
         router.push("/")
         return
       }
 
+      const foundTicket = JSON.parse(ticketData)
       setTicket(foundTicket)
       
       // Generar código y QR

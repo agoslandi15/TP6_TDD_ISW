@@ -32,15 +32,16 @@ function PaymentContent() {
       return
     }
 
-    // Load ticket from localStorage
-    const tickets = JSON.parse(localStorage.getItem("park_tickets") || "[]")
-    const foundTicket = tickets.find((t: Ticket) => t.id === ticketId)
-
-    if (!foundTicket) {
+    // Obtener datos del ticket desde localStorage (guardado después de la compra exitosa)
+    const ticketData = localStorage.getItem(`ticket_${ticketId}`)
+    
+    if (!ticketData) {
+      console.error("No se encontraron datos del ticket")
       router.push("/")
       return
     }
 
+    const foundTicket = JSON.parse(ticketData)
     setTicket(foundTicket)
 
     // Simular redirección a Mercado Pago
@@ -74,14 +75,10 @@ function PaymentContent() {
     await new Promise((resolve) => setTimeout(resolve, 2000))
 
     // Actualizar estado del ticket
-    const tickets = JSON.parse(localStorage.getItem("park_tickets") || "[]")
-    const updatedTickets = tickets.map((t: Ticket) => {
-      if (t.id === ticketId) {
-        return { ...t, status: "confirmed" }
-      }
-      return t
-    })
-    localStorage.setItem("park_tickets", JSON.stringify(updatedTickets))
+    if (ticket) {
+      const updatedTicket = { ...ticket, status: "confirmed" }
+      localStorage.setItem(`ticket_${ticketId}`, JSON.stringify(updatedTicket))
+    }
 
     // Mostrar pantalla de redirección
     setReturningToSite(true)
