@@ -7,8 +7,7 @@ import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import type { Ticket } from "@/lib/park-data"
-import { generate_ticket_code, generate_qr_code_data_url } from "@/lib/qr-generator"
-import { CheckCircle2, Calendar, Users, CreditCard, Download, Home, Loader2, QrCode, Hash } from "lucide-react"
+import { CheckCircle2, Calendar, Users, CreditCard, Home, Loader2 } from "lucide-react"
 
 function ConfirmationContent() {
   const router = useRouter()
@@ -17,10 +16,7 @@ function ConfirmationContent() {
   const ticketId = searchParams.get("ticketId")
 
   const [ticket, setTicket] = useState<Ticket | null>(null)
-  // const [emailContent, setEmailContent] = useState<string>("")
   const [is_loading, set_is_loading] = useState(true)
-  const [ticket_code, set_ticket_code] = useState<string>("")
-  const [qr_code_url, set_qr_code_url] = useState<string>("")
 
   useEffect(() => {
     const loadTicket = async () => {
@@ -40,67 +36,12 @@ function ConfirmationContent() {
 
       const foundTicket = JSON.parse(ticketData)
       setTicket(foundTicket)
-      
-      // Generar código y QR
-      const code = generate_ticket_code(foundTicket.id)
-      const qr_url = generate_qr_code_data_url(foundTicket.id, code)
-      set_ticket_code(code)
-      set_qr_code_url(qr_url)
 
       set_is_loading(false)
     }
 
     loadTicket()
   }, [ticketId, user, router])
-
-  const handleDownloadTicket = () => {
-    if (!ticket) return
-
-    const ticketText = `
-ECOHARMONY PARK - ENTRADA
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-CÓDIGO DE ENTRADA: ${ticket_code}
-
-Número de Orden: ${ticket.id.toUpperCase()}
-Fecha de Compra: ${new Date(ticket.purchase_date).toLocaleDateString("es-AR")}
-
-FECHA DE VISITA
-${new Date(ticket.visit_date + "T00:00:00").toLocaleDateString("es-AR", {
-  weekday: "long",
-  year: "numeric",
-  month: "long",
-  day: "numeric",
-})}
-
-CANTIDAD DE ENTRADAS: ${ticket.quantity}
-
-VISITANTES:
-${ticket.visitors
-  .map(
-    (visitor, index) => `
-${index + 1}. Edad: ${visitor.age} años | Pase: ${visitor.pass_type}
-`,
-  )
-  .join("")}
-
-TOTAL PAGADO: $${ticket.total_amount?.toLocaleString("es-AR") || "0"}
-MÉTODO DE PAGO: ${ticket.payment_method === "card" ? "Tarjeta" : "Efectivo en Boletería"}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Presenta este comprobante y el código ${ticket_code} al ingresar
-    `.trim()
-
-    const blob = new Blob([ticketText], { type: "text/plain" })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement("a")
-    a.href = url
-    a.download = `entrada-parque-${ticket.id}.txt`
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
-  }
 
   if (is_loading || !ticket) {
     return (
@@ -133,55 +74,34 @@ Presenta este comprobante y el código ${ticket_code} al ingresar
                   <h1 className="font-display text-3xl font-bold text-primary">Compra Confirmada</h1>
                   <p className="mt-2 text-lg text-muted-foreground">Tu compra ha sido procesada exitosamente</p>
                 </div>
+                
+                {/* Decorative Icons */}
+                <div className="mt-6 flex items-center justify-center gap-8">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-16 w-16 text-accent">
+                    <path d="M10 10v.2A3 3 0 0 1 8.9 16H5a3 3 0 0 1-1-5.8V10a3 3 0 0 1 6 0Z"></path>
+                    <path d="M7 16v6"></path>
+                    <path d="M13 19v3"></path>
+                    <path d="M12 19h8.3a1 1 0 0 0 .7-1.7L18 14h.3a1 1 0 0 0 .7-1.7L16 9h.2a1 1 0 0 0 .8-1.7L13 3l-1.4 1.5"></path>
+                  </svg>
+                  
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-12 w-12 text-primary">
+                    <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path>
+                    <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path>
+                  </svg>
+                  
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-10 w-10 text-secondary">
+                    <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path>
+                    <path d="M20 3v4"></path>
+                    <path d="M22 5h-4"></path>
+                    <path d="M4 17v2"></path>
+                    <path d="M5 18H3"></path>
+                  </svg>
+                </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* QR Code and Ticket Code Display */}
-          {ticket_code && (
-            <Card className="border-2 border-primary">
-              <CardHeader className="bg-primary/5">
-                <CardTitle className="font-display text-2xl text-center">Tu Código de Entrada</CardTitle>
-              </CardHeader>
-              <CardContent className="pt-6">
-                <div className="grid gap-6 md:grid-cols-2">
-                  {/* QR Code */}
-                  <div className="flex flex-col items-center gap-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                      <QrCode className="h-6 w-6 text-primary" />
-                    </div>
-                    <h3 className="font-semibold text-lg">Código QR</h3>
-                    {qr_code_url && (
-                      <div className="rounded-lg border-4 border-primary/20 bg-white p-4">
-                        <img src={qr_code_url || "/placeholder.svg"} alt="QR Code" className="h-48 w-48" />
-                      </div>
-                    )}
-                    <p className="text-sm text-center text-muted-foreground">
-                      Escanea este código al ingresar al parque
-                    </p>
-                  </div>
 
-                  {/* Alphanumeric Code */}
-                  <div className="flex flex-col items-center gap-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                      <Hash className="h-6 w-6 text-primary" />
-                    </div>
-                    <h3 className="font-semibold text-lg">Código Alternativo</h3>
-                    <div className="rounded-lg border-4 border-primary/20 bg-primary/5 p-6">
-                      <p className="font-mono text-3xl font-bold text-primary tracking-wider">{ticket_code}</p>
-                    </div>
-                    <p className="text-sm text-center text-muted-foreground">Usa este código si el QR no funciona</p>
-                  </div>
-                </div>
-
-                <div className="mt-6 rounded-lg bg-accent/10 border border-accent/20 p-4">
-                  <p className="text-sm text-center font-medium text-accent-foreground">
-                    💡 Guarda este código o toma una captura de pantalla.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          )}
 
           {/* Ticket Details */}
           <Card>
@@ -288,10 +208,6 @@ Presenta este comprobante y el código ${ticket_code} al ingresar
 
           {/* Actions */}
           <div className="flex flex-col gap-3 sm:flex-row">
-            <Button onClick={handleDownloadTicket} variant="outline" className="flex-1 gap-2 bg-transparent">
-              <Download className="h-4 w-4" />
-              Descargar Comprobante
-            </Button>
             <Button onClick={() => router.push("/")} className="flex-1 gap-2 bg-primary hover:bg-primary-dark">
               <Home className="h-4 w-4" />
               Volver al Inicio
@@ -309,7 +225,7 @@ Presenta este comprobante y el código ${ticket_code} al ingresar
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="mt-1 text-primary">•</span>
-                  <span>Presenta tu comprobante y el código {ticket_code} al ingresar al parque</span>
+                  <span>Presenta tu comprobante al ingresar al parque</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="mt-1 text-primary">•</span>
