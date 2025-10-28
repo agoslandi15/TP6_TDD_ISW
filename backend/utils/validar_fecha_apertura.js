@@ -1,4 +1,14 @@
 function validar_fecha_apertura(fecha_apertura) {    
+	if (!fecha_apertura) {
+		return "La fecha es obligatoria";
+	}
+
+	// Validar que sea una fecha válida
+	const fecha = new Date(fecha_apertura);
+	if (isNaN(fecha.getTime())) {
+		return "La fecha no es válida";
+	}
+
 	const hoy = new Date();
 	hoy.setHours(0, 0, 0, 0); 
 

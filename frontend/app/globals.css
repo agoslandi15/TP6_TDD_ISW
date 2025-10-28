@@ -153,3 +153,12 @@
   animation: float-delayed 8s ease-in-out infinite;
   animation-delay: 1s;
 }
+
+/* Ocultar el indicador de Next.js en desarrollo */
+#__next-build-watcher {
+  display: none !important;
+}
+
+nextjs-portal {
+  display: none !important;
+}

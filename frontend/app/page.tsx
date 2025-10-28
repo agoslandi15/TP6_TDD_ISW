@@ -1,9 +1,9 @@
 "use client"
 
-import { use_auth } from "@/lib/auth-context"
+import { use_auth } from "@/lib/auth_context"
 import { Header } from "@/components/header"
-import { LoginForm } from "@/components/login-form"
-import { TicketPurchaseForm } from "@/components/ticket-purchase-form"
+import { LoginForm } from "@/components/login_form"
+import { TicketPurchaseForm } from "@/components/ticket_purchase_form"
 
 export default function Home() {
   const { user, is_loading } = use_auth()

@@ -48,4 +48,57 @@ test(
     }
 );
 
+test(
+    'Deberia lanzar error cuando edad es null', () => {
+        expect(() => validar_edad_precio(null, 'VIP')).toThrow('La edad es obligatoria');
+    }
+);
+
+test(
+    'Deberia lanzar error cuando edad es undefined', () => {
+        expect(() => validar_edad_precio(undefined, 'VIP')).toThrow('La edad es obligatoria');
+    }
+);
+
+test(
+    'Deberia lanzar error cuando edad es vacía', () => {
+        expect(() => validar_edad_precio('', 'VIP')).toThrow('La edad es obligatoria');
+    }
+);
+
+test(
+    'Deberia lanzar error cuando tipo de entrada es null', () => {
+        expect(() => validar_edad_precio(25, null)).toThrow('El tipo de entrada es obligatorio');
+    }
+);
+
+test(
+    'Deberia lanzar error cuando tipo de entrada es undefined', () => {
+        expect(() => validar_edad_precio(25, undefined)).toThrow('El tipo de entrada es obligatorio');
+    }
+);
+
+test(
+    'Deberia lanzar error cuando tipo de entrada es vacío', () => {
+        expect(() => validar_edad_precio(25, '')).toThrow('El tipo de entrada es obligatorio');
+    }
+);
+
+test(
+    'Deberia lanzar error cuando tipo de entrada es inválido', () => {
+        expect(() => validar_edad_precio(25, 'Premium')).toThrow('Tipo de entrada inválido');
+    }
+);
+
+test(
+    'Deberia lanzar error cuando edad no es un número', () => {
+        expect(() => validar_edad_precio('veinte', 'VIP')).toThrow('La edad debe ser un número válido mayor o igual a 0');
+    }
+);
+
+test(
+    'Deberia lanzar error cuando edad es negativa', () => {
+        expect(() => validar_edad_precio(-5, 'VIP')).toThrow('La edad debe ser un número válido mayor o igual a 0');
+    }
+);
 

@@ -8,10 +8,24 @@
 //otra edad: precio normal
 
 function validar_edad_precio(edad, tipo_entrada) {
+    if (edad === null || edad === undefined || edad === '') {
+        throw new Error('La edad es obligatoria');
+    }
+    
+    if (typeof edad !== 'number' || isNaN(edad) || edad < 0) {
+        throw new Error('La edad debe ser un número válido mayor o igual a 0');
+    }
+    
+    if (!tipo_entrada || tipo_entrada.trim() === '') {
+        throw new Error('El tipo de entrada es obligatorio');
+    }
+    
     if (tipo_entrada == 'VIP') {
         return calcular_precio_entrada(edad, 10000);
     } else if (tipo_entrada == 'Regular') {
         return calcular_precio_entrada(edad, 5000);
+    } else {
+        throw new Error('Tipo de entrada inválido');
     }
 }
 

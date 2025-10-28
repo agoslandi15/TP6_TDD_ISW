@@ -2,7 +2,7 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Montserrat } from "next/font/google"
 import "./globals.css"
-import { AuthProvider } from "@/lib/auth-context"
+import { AuthProvider } from "@/lib/auth_context"
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -11,7 +11,7 @@ const montserrat = Montserrat({
   display: "swap",
 })
 
-export const metadata: Metadata = {
+export const metadata: Metadata = { 
   title: "EcoHarmony Park - Compra de Entradas",
   description: "Sistema de compra de entradas para EcoHarmony Park",
     generator: 'v0.app'

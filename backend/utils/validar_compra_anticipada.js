@@ -1,4 +1,8 @@
 function validar_compra_anticipada(fecha_evento) {
+    if (!fecha_evento) {
+        return 'La fecha del evento es obligatoria';
+    }
+
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0); // Normalizar a medianoche para comparar solo fechas
     
@@ -8,6 +12,12 @@ function validar_compra_anticipada(fecha_evento) {
 
     // Normalizar fecha_evento también
     const fecha_evento_normalizada = new Date(fecha_evento);
+    
+    // Validar que la fecha sea válida
+    if (isNaN(fecha_evento_normalizada.getTime())) {
+        return 'La fecha del evento no es válida';
+    }
+    
     fecha_evento_normalizada.setHours(0, 0, 0, 0);
 
     if (fecha_evento_normalizada < hoy ) {

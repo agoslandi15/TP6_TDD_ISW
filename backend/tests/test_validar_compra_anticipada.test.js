@@ -19,3 +19,19 @@ test('fecha inválida más de un mes en el futuro', () => {
     fecha_evento.setMonth(hoy.getMonth() + 2);
     expect(validar_compra_anticipada(fecha_evento)).toBe('No se pueden comprar entradas con más de un mes de anticipación');
 });
+
+test('fecha es null', () => {
+    expect(validar_compra_anticipada(null)).toBe('La fecha del evento es obligatoria');
+});
+
+test('fecha es undefined', () => {
+    expect(validar_compra_anticipada(undefined)).toBe('La fecha del evento es obligatoria');
+});
+
+test('fecha es vacía', () => {
+    expect(validar_compra_anticipada('')).toBe('La fecha del evento es obligatoria');
+});
+
+test('fecha no válida', () => {
+    expect(validar_compra_anticipada('fecha-invalida')).toBe('La fecha del evento no es válida');
+});

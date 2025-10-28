@@ -14,19 +14,19 @@ function comprar_entradas(fecha_evento, cantidad_entradas, edad_comprador, tipo_
     const fecha_evento_date = new Date(año, mes, día);
 
     if (validar_cantidad_entradas(cantidad_entradas) !== "Se ingresó una cantidad válida de entradas") {
-        return "Cantidad de entradas no válida, no puede superar las 10 entradas";
+        return validar_cantidad_entradas(cantidad_entradas);
     }
     if (validar_fecha_apertura(fecha_evento_date) !== "Se ingresó correctamente la fecha del evento") {
-        return "Fecha de evento no válida, el parque está cerrado ese día";
+        return validar_fecha_apertura(fecha_evento_date);
     }
     if (validar_compra_anticipada(fecha_evento_date) !== "Se ingresó correctamente la fecha del evento") {
-        return "Compra anticipada no válida, se permiten compras con hasta un mes de anticipación";
+        return validar_compra_anticipada(fecha_evento_date);
     }
     for (let i = 1; i < cantidad_entradas; i++) {
         validar_edad_precio(edad_comprador[i], tipo_entrada[i]);
     }
     if (validar_seleccion_forma_pago(forma_pago) !== "Forma de pago válida") {
-        return "Forma de pago no válida";
+        return validar_seleccion_forma_pago(forma_pago);
     }
     return "Compra realizada con éxito";
 }

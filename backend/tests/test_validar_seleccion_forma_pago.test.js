@@ -14,12 +14,30 @@ test(
 
 test(
     'Deberia devolver error por forma de pago no seleccionada', () => {
-        expect(validar_seleccion_forma_pago('')).toBe("Forma de pago inválida");
+        expect(validar_seleccion_forma_pago('')).toBe("Forma de pago no válida");
     }
 );
 
 test(
     'Deberia devolver error por forma de pago no válida', () => {
-        expect(validar_seleccion_forma_pago('tarjeta')).toBe("Forma de pago inválida");
+        expect(validar_seleccion_forma_pago('tarjeta')).toBe("Forma de pago no válida");
     }
-); 
+);
+
+test(
+    'Deberia devolver error cuando forma de pago es null', () => {
+        expect(validar_seleccion_forma_pago(null)).toBe("Forma de pago no válida");
+    }
+);
+
+test(
+    'Deberia devolver error cuando forma de pago es undefined', () => {
+        expect(validar_seleccion_forma_pago(undefined)).toBe("Forma de pago no válida");
+    }
+);
+
+test(
+    'Deberia devolver error cuando forma de pago solo tiene espacios', () => {
+        expect(validar_seleccion_forma_pago('   ')).toBe("Forma de pago no válida");
+    }
+);

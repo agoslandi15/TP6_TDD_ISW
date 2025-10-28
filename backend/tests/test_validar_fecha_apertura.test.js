@@ -1,7 +1,7 @@
 const validar_fecha_apertura = require('../utils/validar_fecha_apertura');
 
 test('fecha invalida dias lunes', () => {
-  const fecha = new Date(2024, 9, 7);
+  const fecha = new Date(2025, 9, 27);
   expect(validar_fecha_apertura(fecha)).toBe('Parque cerrado los días lunes');
 });
 
@@ -25,4 +25,16 @@ test('fecha valida', () => {
   const fecha = new Date();
   fecha.setDate(hoy.getDate() + 15);
   expect(validar_fecha_apertura(fecha)).toBe('Se ingresó correctamente la fecha del evento');
+});
+
+test('fecha es null', () => {
+  expect(validar_fecha_apertura(null)).toBe('La fecha es obligatoria');
+});
+
+test('fecha es undefined', () => {
+  expect(validar_fecha_apertura(undefined)).toBe('La fecha es obligatoria');
+});
+
+test('fecha no válida', () => {
+  expect(validar_fecha_apertura('fecha-invalida')).toBe('La fecha no es válida');
 });

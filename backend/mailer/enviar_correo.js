@@ -165,7 +165,6 @@ async function enviar_correo_responsable(destinatario, datos) {
               <p style="color: #999; margin: 0 0 10px 0; font-size: 13px;">¡Esperamos verte pronto en EcoHarmony Park!</p>
               <p style="color: #2d5016; margin: 10px 0; font-size: 16px; font-weight: bold;">🌿 Grupo 3</p>
               <p style="color: #999; margin: 0; font-size: 12px;">
-                <a href="mailto:ecoharmonypark@gmail.com" style="color: #4a7c2c; text-decoration: none;">ecoharmonypark@gmail.com</a>
               </p>
             </td>
           </tr>
